@@ -101,7 +101,7 @@ class Game{
         }
         this.players[loser].diceCount -= 1;
         this.turnPlayer = loser;
-        while(this.players[this.turnPlayer].diceCount == 0){
+        while(this.players[this.turnPlayer].diceCount == 0){//todo: end the game if one player left
             this.turnPlayer = (this.turnPlayer + 1) % (this.players.length);
         }
     }
