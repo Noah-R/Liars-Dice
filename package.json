@@ -1,0 +1,22 @@
+{
+  "name": "liars-dice",
+  "version": "1.0.0",
+  "description": "https://en.wikipedia.org/wiki/Liar%27s_dice",
+  "main": "server.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Noah Rutkovsky",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
+  }
+}
