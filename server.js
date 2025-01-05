@@ -1,14 +1,13 @@
-const express = require('express')
-const app = express()
-const port = 8080
+const game = require("./game.js");
+const express = require('express');
+const app = express();
+const port = 8080;
 
 app.use(express.static('dist'));
   
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });
-
-//
 
 const io = require('socket.io')(3000, {
     cors: {
@@ -18,9 +17,12 @@ const io = require('socket.io')(3000, {
 
 io.on('connection', socket => {
     console.log(socket.id);
+
     socket.on('event', (data) => {
-       console.log(data); 
+       console.log(data);
+       socket.emit('event', "received "+data);
     });
+
 });
 
 //socket.emit to everyone
