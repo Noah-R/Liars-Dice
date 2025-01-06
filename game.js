@@ -102,7 +102,8 @@ class Game{
 	round() {
 		for (let i = 0; i < this.players.length; i++) {
 			this.players[i].rollDice();
-			this.players[i].socket.emit('event', "Your dice "+this.players[i].dice);
+			console.log("sending "+ this.players[i].dice + " to "+ this.players[i].socket.id);
+			this.players[i].socket.emit('event', "Your dice "+this.players[i].dice);//this does not work for the client that started the game
 		}
 		this.bid = { bidder: -1, amount: 0, pips: 0, challenger: -1 };
 		while (this.bid["challenger"] == -1) {
