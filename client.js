@@ -5,10 +5,10 @@ socket.on('connect', () => {
     console.log(`Connected with id: ${socket.id}`);
     
     document.getElementById("button").onclick = () => {
-        socket.emit('event', document.getElementById("input").value);
+        socket.emit(document.getElementById("eventType").value, document.getElementById("input").value);
     }
     
-    socket.on('event', (data) => {
+    socket.on('message', (data) => {
         document.getElementById("output").innerHTML += data + "<br>";
      });
 });

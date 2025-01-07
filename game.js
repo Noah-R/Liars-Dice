@@ -1,4 +1,3 @@
-
 const shuffle = function (array) {
 	for (let i = array.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
@@ -11,11 +10,11 @@ const shuffle = function (array) {
 }
 
 class Player{
-	constructor(game, socket) {
-		this.game = game;
-		this.socket = socket;
+	constructor(id) {
+		this.id = id;
 		this.diceCount = 5;
 		this.dice = [];
+		this.ready = false;
 	}
 
 	count(value) {
@@ -33,90 +32,75 @@ class Player{
 		for (let i = 0; i < this.diceCount; i++) {
 			this.dice.push(Math.floor(Math.random() * 6) + 1);
 		}
-		//send them their dice
-	}
-
-	takeTurn(bid, turnPlayer) {
-		let challenge = false;
-		if (bid["bidder"] > -1) {
-			//ask to challenge
-		}
-		let amount = 0;
-		let pips = 0;
-
-		if (challenge == "Y") {
-			bid["challenger"] = turnPlayer;
-		}
-		else {
-			while (
-				amount < 1 ||
-				pips < 1 ||
-				pips > 6 ||
-				amount < bid["amount"] ||
-				pips < bid["pips"] ||
-				(amount == bid["amount"] && pips == bid["pips"])
-			) {
-				//ask amount
-				amount = 1;
-				//ask pips
-				pips = 1;
-			}
-			bid["amount"] = amount;
-			bid["pips"] = pips;
-			bid["bidder"] = turnPlayer;
-		}
-		return bid;
 	}
 }
 
 class Game{
 	constructor() {
+		this.started = false;
 		this.players = [];
+		this.ids = {}
 		this.playersLeft = 0;
 		this.bid = {};
 		this.turnPlayer = 0;
 	}
 
-	addPlayer(socket) {
-		if(this.playersLeft == 0){
-			this.players.push(new Player(this, socket));
+	addPlayer(id) {
+		if(!this.started){
+			player = new Player(id);
+			this.ids[id] = player;
+			this.players.push(player);
 			shuffle(this.players);
+			this.playersLeft++;
 		}
+	}
+
+	ready(id){
+		this.ids[id].ready = true;
 	}
 
 	start(){
-		if(this.playersLeft == 0){
-			this.playersLeft = this.players.length;
-			while(this.playersLeft > 1){
-				this.round();
-				this.playersLeft = 0;
-				for(let i = 0; i < this.players.length; i++){
-					if(players[i].diceCount > 0){
-						this.playersLeft++;
-					}
-				}
-			}
-		}
-	}
-
-	round() {
+		this.started = true
 		for (let i = 0; i < this.players.length; i++) {
 			this.players[i].rollDice();
-			console.log("sending "+ this.players[i].dice + " to "+ this.players[i].socket.id);
-			this.players[i].socket.emit('event', "Your dice "+this.players[i].dice);//this does not work for the client that started the game
+			this.players[i].ready = false;
 		}
 		this.bid = { bidder: -1, amount: 0, pips: 0, challenger: -1 };
-		while (this.bid["challenger"] == -1) {
-			this.bid = this.players[this.turnPlayer].takeTurn(
-				this.bid,
-				this.turnPlayer
-			);
+	}
+
+	takeTurn(id, action) {//action is "challenge" or [amount, pips], validate and modify bid/turnPlayer for now
+		if(id != this.players[turnPlayer].id){
+			return false
+		}
+		if (action == "challenge" && this.bid["bidder"] > -1) {
+			this.bid["challenger"] = this.turnPlayer;
+			this.challenge()
+		}
+		if(
+			action[0] < 1 ||
+			action[1] < 1 ||
+			action[1] > 6 ||
+			action[0] < this.bid["amount"] ||
+			action[1] < this.bid["pips"] ||
+			(action[0] == this.bid["amount"] && action[1] == this.bid["pips"])
+		) {
+			return false
+		}
+		else{
+			this.bid["amount"] = action[0];
+			this.bid["pips"] = action[1];
+			this.bid["bidder"] = this.game.turnPlayer;
+
 			this.turnPlayer = (this.turnPlayer + 1) % this.players.length;
 			while (this.players[this.turnPlayer].diceCount == 0) {
-				this.turnPlayer =
-					(this.turnPlayer + 1) % this.players.length;
+				this.turnPlayer = (this.turnPlayer + 1) % this.players.length;
 			}
 		}
+		//TODO: send each player the game state
+		return true;
+	}
+
+	challenge(){
 		let total = 0;
 		for (let i = 0; i < this.players.length; i++) {
 			total += this.players[i].count(this.bid["pips"]);
@@ -128,9 +112,18 @@ class Game{
 		this.players[loser].diceCount -= 1;
 		this.turnPlayer = loser;
 		while (this.players[this.turnPlayer].diceCount == 0) {
-			//todo: end the game if one player left
 			this.turnPlayer = (this.turnPlayer + 1) % this.players.length;
 		}
+	}
+
+	update(){
+		for (let i = 0; i < this.players.length; i++) {
+			if(this.players[i].ready == false){
+				return
+			}
+		}
+		this.start();
+		//TODO: send each player the game state
 	}
 }
 
