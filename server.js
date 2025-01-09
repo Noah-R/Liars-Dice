@@ -25,7 +25,6 @@ io.on("connection", (socket) => {
 
 	socket.on("ready", (data) => {
 		g1.ready(socket.id);
-        g1.startIfReady();
 	});
 
 	socket.on("move", (data) => {

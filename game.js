@@ -38,11 +38,9 @@ class Player {
 
 class Game {
 	constructor() {
-		this.state = "starting";//starting, readying, round
-		//TODO: cleanup players data structures/order
-		this.players = [];
-		this.ids = {};
-		this.playersLeft = 0;
+		this.state = "starting"; //starting, readying, round, over
+		this.players = {};
+		this.turnOrder = [];
 		this.bid = {};
 		this.turnPlayer = 0;
 	}
@@ -50,30 +48,34 @@ class Game {
 	addPlayer(socket) {
 		if (this.state == "starting") {
 			let player = new Player(socket);
-			this.ids[socket.id] = player;
-			this.players.push(player);
-			shuffle(this.players);
-			this.playersLeft++;
+			this.players[socket.id] = player;
+			this.turnOrder.push(socket.id);
 		}
 	}
 
 	ready(id) {
-		this.ids[id].ready = true;
+		if (!this.state == "round" || this.state == "over") {
+			return;
+		}
+		this.players[id].ready = true;
+		this.startIfReady();
 	}
 
 	startIfReady() {
-		if(!this.state == "round"){
-			return;
-		}
-		for (let i = 0; i < this.players.length; i++) {
-			if (this.players[i].ready == false) {
+		for (let i = 0; i < this.turnOrder.length; i++) {
+			if (this.players[this.turnOrder[i]].ready == false) {
 				return;
 			}
 		}
+
+		if (this.state == "starting") {
+			shuffle(this.turnOrder);
+		}
+
 		this.state = "round";
-		for (let i = 0; i < this.players.length; i++) {
-			this.players[i].rollDice();
-			this.players[i].ready = false;
+		for (let i = 0; i < this.turnOrder.length; i++) {
+			this.players[this.turnOrder[i]].rollDice();
+			this.players[this.turnOrder[i]].ready = false;
 		}
 		this.bid = { bidder: -1, amount: 0, pips: 0, challenger: -1 };
 		this.sendGameState();
@@ -81,14 +83,13 @@ class Game {
 
 	takeTurn(id, action) {
 		//action is "challenge" or [amount, pips], validate and modify bid/turnPlayer for now
-		if (id != this.players[this.turnPlayer].id || this.state != "round") {
+		if (id != this.turnOrder[this.turnPlayer] || this.state != "round") {
 			return false;
 		}
 		if (action == "challenge" && this.bid["bidder"] > -1) {
 			this.bid["challenger"] = this.turnPlayer;
 			this.challenge();
-		}
-		else if (
+		} else if (
 			action[0] < 1 ||
 			action[1] < 1 ||
 			action[1] > 6 ||
@@ -102,10 +103,7 @@ class Game {
 			this.bid["pips"] = action[1];
 			this.bid["bidder"] = this.turnPlayer;
 
-			this.turnPlayer = (this.turnPlayer + 1) % this.players.length;
-			while (this.players[this.turnPlayer].diceCount == 0) {
-				this.turnPlayer = (this.turnPlayer + 1) % this.players.length;
-			}
+			this.turnPlayer = (this.turnPlayer + 1) % this.turnOrder.length;
 		}
 		this.sendGameState();
 		return true;
@@ -113,30 +111,54 @@ class Game {
 
 	challenge() {
 		let total = 0;
-		for (let i = 0; i < this.players.length; i++) {
-			total += this.players[i].count(this.bid["pips"]);
-			this.players[i].ready = false;
+		for (let i = 0; i < this.turnOrder.length; i++) {
+			total += this.players[this.turnOrder[i]].count(this.bid["pips"]);
+			this.players[this.turnOrder[i]].ready = false;
 		}
 		let loser = this.bid["challenger"];
 		if (total < this.bid["amount"]) {
 			loser = this.bid["bidder"];
 		}
-		this.players[loser].diceCount -= 1;
+		this.players[this.turnOrder[loser]].diceCount -= 1;
 		this.turnPlayer = loser;
-		while (this.players[this.turnPlayer].diceCount == 0) {
-			this.turnPlayer = (this.turnPlayer + 1) % this.players.length;
+
+		if (this.players[this.turnOrder[loser]].diceCount == 0) {
+			this.turnOrder.pop(loser);
+			this.turnPlayer == this.turnPlayer % this.turnOrder.length;
 		}
+
 		this.state = "readying";
+		if(this.turnOrder.length == 1){
+			this.state = "over";
+		}
 	}
 
-	sendGameState(){
-		for (let i = 0; i < this.players.length; i++) {
-			this.players[i].socket.emit(
-				"message",
-				this.players[this.turnPlayer].id +"'s turn, Your dice: " + this.players[i].dice + ", player " + this.bid["bidder"] + " bids " + this.bid["amount"] + " " + this.bid["pips"]
-			);
+	sendGameState() {
+		if(this.state == "over"){
+			for (var key of Object.keys(this.players)) {
+				this.players[key].socket.emit(
+					"message",
+					this.turnOrder[0] + " wins!"
+				);
+			}
 		}
-	}
+		else{
+			for (var key of Object.keys(this.players)) {
+				this.players[key].socket.emit(
+					"message",
+					this.turnOrder[this.turnPlayer] +
+						"'s turn, Your dice: " +
+						this.players[key].dice +
+						", " +
+						this.turnOrder[this.bid["bidder"]] +
+						" bids " +
+						this.bid["amount"] +
+						" " +
+						this.bid["pips"]
+				);
+			}
+		}
+}
 }
 
 module.exports = {
