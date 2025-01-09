@@ -29,6 +29,7 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("move", (data) => {
+		console.log(typeof data);
 		g1.takeTurn(socket.id, data);
 	});
 });

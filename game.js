@@ -38,7 +38,8 @@ class Player {
 
 class Game {
 	constructor() {
-		this.started = false;
+		this.state = "starting";//starting, readying, round
+		//TODO: cleanup players data structures/order
 		this.players = [];
 		this.ids = {};
 		this.playersLeft = 0;
@@ -47,7 +48,7 @@ class Game {
 	}
 
 	addPlayer(socket) {
-		if (!this.started) {
+		if (this.state == "starting") {
 			let player = new Player(socket);
 			this.ids[socket.id] = player;
 			this.players.push(player);
@@ -61,12 +62,15 @@ class Game {
 	}
 
 	startIfReady() {
+		if(!this.state == "round"){
+			return;
+		}
 		for (let i = 0; i < this.players.length; i++) {
 			if (this.players[i].ready == false) {
 				return;
 			}
 		}
-		this.started = true;
+		this.state = "round";
 		for (let i = 0; i < this.players.length; i++) {
 			this.players[i].rollDice();
 			this.players[i].ready = false;
@@ -77,14 +81,14 @@ class Game {
 
 	takeTurn(id, action) {
 		//action is "challenge" or [amount, pips], validate and modify bid/turnPlayer for now
-		if (id != this.players[this.turnPlayer].id) {
+		if (id != this.players[this.turnPlayer].id || this.state != "round") {
 			return false;
 		}
 		if (action == "challenge" && this.bid["bidder"] > -1) {
 			this.bid["challenger"] = this.turnPlayer;
 			this.challenge();
 		}
-		if (
+		else if (
 			action[0] < 1 ||
 			action[1] < 1 ||
 			action[1] > 6 ||
@@ -111,6 +115,7 @@ class Game {
 		let total = 0;
 		for (let i = 0; i < this.players.length; i++) {
 			total += this.players[i].count(this.bid["pips"]);
+			this.players[i].ready = false;
 		}
 		let loser = this.bid["challenger"];
 		if (total < this.bid["amount"]) {
@@ -121,6 +126,7 @@ class Game {
 		while (this.players[this.turnPlayer].diceCount == 0) {
 			this.turnPlayer = (this.turnPlayer + 1) % this.players.length;
 		}
+		this.state = "readying";
 	}
 
 	sendGameState(){
