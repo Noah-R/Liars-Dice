@@ -128,25 +128,25 @@ class Game {
 		}
 
 		this.state = "readying";
-		if(this.turnOrder.length == 1){
+		if (this.turnOrder.length == 1) {
 			this.state = "over";
 		}
 	}
 
 	sendGameState() {
-		if(this.state == "over"){
+		if (this.state == "over") {
 			for (var key of Object.keys(this.players)) {
-				this.players[key].socket.emit(
-					"message",
-					this.turnOrder[0] + " wins!"
-				);
+				this.players[key].socket.emit("message", {
+					state: this.state,
+					message: this.turnOrder[0] + " wins!",
+				});
 			}
-		}
-		else{
+		} else {
 			for (var key of Object.keys(this.players)) {
-				this.players[key].socket.emit(
-					"message",
-					this.turnOrder[this.turnPlayer] +
+				this.players[key].socket.emit("message", {
+					state: this.state,
+					message:
+						this.turnOrder[this.turnPlayer] +
 						"'s turn, Your dice: " +
 						this.players[key].dice +
 						", " +
@@ -154,11 +154,11 @@ class Game {
 						" bids " +
 						this.bid["amount"] +
 						" " +
-						this.bid["pips"]
-				);
+						this.bid["pips"],
+				});
 			}
 		}
-}
+	}
 }
 
 module.exports = {
