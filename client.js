@@ -25,7 +25,7 @@ function App() {
 			if (data.state) {
 				setGameState(data.state);
 			}
-			setLog((log += data.message + "\n"));
+			setLog(data.message);
 			console.log(data.message); //delete
 		}
 
