@@ -10,10 +10,13 @@ const shuffle = function (array) {
 };
 
 class Player {
-	constructor(socket) {
+	constructor(socket, spectator = false) {
 		this.socket = socket;
 		this.id = socket.id;
 		this.diceCount = 5;
+		if(spectator){
+			this.diceCount = 0;
+		}
 		this.dice = [];
 		this.ready = false;
 	}
@@ -78,11 +81,11 @@ class Game {
 			this.players[this.turnOrder[i]].ready = false;
 		}
 		this.bid = { bidder: -1, amount: 0, pips: 0, challenger: -1 };
-		this.sendGameState();
+		this.sendGameState(true);
 	}
 
 	takeTurn(id, action) {
-		//action is "challenge" or [amount, pips], validate and modify bid/turnPlayer for now
+		//action is "challenge" or [amount, pips]
 		if (id != this.turnOrder[this.turnPlayer] || this.state != "round") {
 			return false;
 		}
@@ -105,7 +108,7 @@ class Game {
 
 			this.turnPlayer = (this.turnPlayer + 1) % this.turnOrder.length;
 		}
-		this.sendGameState();
+		this.sendGameState(false);
 		return true;
 	}
 
@@ -133,30 +136,47 @@ class Game {
 		}
 	}
 
-	sendGameState() {
-		if (this.state == "over") {
-			for (var key of Object.keys(this.players)) {
-				this.players[key].socket.emit("message", {
-					state: this.state,
-					message: this.turnOrder[0] + " wins!",
-				});
+	sendGameState(startOfRound) {
+		for (var key of Object.keys(this.players)) {
+			let objectToSend = {bid: this.bid, state: this.state };
+			if (this.state == "round") {
+				objectToSend.turn = this.turnOrder[this.turnPlayer];
+				if (startOfRound) {
+					objectToSend.players = [];
+					objectToSend.youAre = -1;
+					for (let i = 0; i < this.turnOrder.length; i++) {
+						const player =
+							this.players[this.turnOrder[i]];
+						if (key == player.id) {
+							objectToSend.players.push({
+								name: player.id,
+								dice: player.dice,
+							});
+							objectToSend.youAre = i;
+						} else {
+							objectToSend.players.push({
+								name: player.id,
+								dice: player.dice.map(number => number * 0),
+							});
+						}
+					}
+				}
+			} else {
+				objectToSend.players = [];
+				for (let i = 0; i < this.turnOrder.length; i++) {
+					const player =
+						this.players[this.turnOrder[i]];
+					objectToSend.players.push({
+						name: player.id,
+						dice: player.dice,
+					});
+				}
 			}
-		} else {
-			for (var key of Object.keys(this.players)) {
-				this.players[key].socket.emit("message", {
-					state: this.state,
-					message:
-						this.turnOrder[this.turnPlayer] +
-						"'s turn, Your dice: " +
-						this.players[key].dice +
-						", " +
-						this.turnOrder[this.bid["bidder"]] +
-						" bids " +
-						this.bid["amount"] +
-						" " +
-						this.bid["pips"],
-				});
+			if (this.state == "over") {
+				objectToSend.winner = this.turnOrder[0];
 			}
+			if (this.state)
+				this.players[key].socket.emit("message", objectToSend);
 		}
 	}
 }

@@ -16,11 +16,11 @@ g1 = new game.Game();
 io.on("connection", (socket) => {
 	console.log(socket.id + " connected");
 	g1.addPlayer(socket);
-	socket.emit("message", {state: false, message: "you are " + socket.id});
+	socket.emit("message", {message: "you are " + socket.id});
 
 	socket.on("message", (data) => {
 		console.log(data);
-		socket.emit("message", {state: false, message: "received " + data});
+		socket.emit("message", {message: "received " + data});
 	});
 
 	socket.on("ready", (data) => {

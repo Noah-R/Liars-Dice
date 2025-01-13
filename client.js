@@ -7,7 +7,11 @@ const socket = io("http://localhost:3000");
 function App() {
 	const [isConnected, setIsConnected] = useState(socket.connected);
 	let [gameState, setGameState] = useState("starting");
-	let [log, setLog] = useState("");
+	let [bid, setBid] = useState("");
+	let [turn, setTurn] = useState(0);
+	let [players, setPlayers] = useState([]);
+	let [youAre, setYouAre] = useState(0);
+	let [winner, setWinner] = useState("");
 	const [inputValue, setInputValue] = useState('');
 
 	useEffect(() => {
@@ -22,11 +26,31 @@ function App() {
 		}
 
 		function onMessage(data) {
-			if (data.state) {
+			if('message' in data){
+				console.log(data.message);
+			}
+			if ('state' in data) {
 				setGameState(data.state);
 			}
-			setLog(data.message);
-			console.log(data.message); //delete
+			if ('bid' in data) {
+				setBid(data.bid.bidder + " bids " + data.bid.amount + " " + data.bid.pips);
+			}
+			if ('turn' in data) {
+				setTurn(data.turn);
+			}
+			if ('players' in data) {//todo: turn this temp unpacking code into matching data structures on the server
+				let players = []
+				for(let i = 0; i < data.players.length; i++){
+					players.push(data.players[i].name + " has " + data.players[i].dice);
+				}
+				setPlayers(players);
+			}
+			if ('youAre' in data) {
+				setYouAre(data.youAre);
+			}
+			if ('winner' in data) {
+				setWinner(data.winner);
+			}
 		}
 
 		socket.on("connect", onConnect);
@@ -40,7 +64,7 @@ function App() {
 		};
 	}, []);
 
-	let bid = () => {
+	let move = () => {
 		socket.emit("move", inputValue);
 	};
 	
@@ -56,15 +80,15 @@ function App() {
 	  setInputValue(event.target.value);
 	};
 
-	return (
+	return (//todo: build frontend from paper designs, state variables
 		<div>
-			<div id="output">{log}</div>
+			<div id="output">{"turn: " + turn + ", bid: " + bid + ", players: " + players + ", you are " + youAre + ", winner: " + winner}</div>
 			{gameState == "round" && (
 				<div>
 					<input id="input" value={inputValue} onChange={handleInputChange} ></input>{" "}
 					<button
 						id="bid"
-						onClick={bid}
+						onClick={move}
 					>
 						Bid
 					</button>
