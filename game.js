@@ -138,38 +138,40 @@ class Game {
 
 	sendGameState(startOfRound) {
 		for (var key of Object.keys(this.players)) {
-			let objectToSend = {bid: this.bid, state: this.state };
+			let objectToSend = {state: this.state};
+			if(this.bid["bidder"] == -1){
+				objectToSend.bid = "No bid yet";
+			}
+			else{
+				objectToSend.bid = this.turnOrder[this.bid["bidder"]] + " bids " + this.bid["amount"] + " " + this.bid["pips"];
+			}
 			if (this.state == "round") {
-				objectToSend.turn = this.turnOrder[this.turnPlayer];
+				objectToSend.turnPlayer = this.turnPlayer;
 				if (startOfRound) {
 					objectToSend.players = [];
+					objectToSend.playerDice = [];
 					objectToSend.youAre = -1;
 					for (let i = 0; i < this.turnOrder.length; i++) {
 						const player =
 							this.players[this.turnOrder[i]];
+						objectToSend.players.push(player.id);
 						if (key == player.id) {
-							objectToSend.players.push({
-								name: player.id,
-								dice: player.dice,
-							});
+							objectToSend.playerDice.push(player.dice);
 							objectToSend.youAre = i;
 						} else {
-							objectToSend.players.push({
-								name: player.id,
-								dice: player.dice.map(number => number * 0),
-							});
+							objectToSend.playerDice.push(player.dice.map(number => number * 0));
 						}
 					}
 				}
 			} else {
+				objectToSend.bid += ", " + this.turnOrder[this.bid["challenger"]] + " challenges";
 				objectToSend.players = [];
+				objectToSend.playerDice = [];
 				for (let i = 0; i < this.turnOrder.length; i++) {
 					const player =
 						this.players[this.turnOrder[i]];
-					objectToSend.players.push({
-						name: player.id,
-						dice: player.dice,
-					});
+						objectToSend.players.push(player.id);
+						objectToSend.playerDice.push(player.dice);
 				}
 			}
 			if (this.state == "over") {

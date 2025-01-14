@@ -1,18 +1,35 @@
 import { createRoot } from "react-dom/client";
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 
 const socket = io("http://localhost:3000");
 
+function Player(props) {
+	let dice = "";
+	for (let i = 0; i < props.dice.length; i++) {
+		dice += "[" + props.dice[i] + "]";
+	}
+	return (
+		<div class="player">
+			<p>{dice}</p>
+			<h3>
+				{props.id}
+				{props.isTurnPlayer && " to play"}
+			</h3>
+		</div>
+	);
+}
+
 function App() {
 	const [isConnected, setIsConnected] = useState(socket.connected);
 	let [gameState, setGameState] = useState("starting");
-	let [bid, setBid] = useState("");
-	let [turn, setTurn] = useState(0);
+	let [bid, setBid] = useState([]);
+	let [turnPlayer, setTurnPlayer] = useState(0);
 	let [players, setPlayers] = useState([]);
+	let [playerDice, setPlayerDice] = useState([]);
 	let [youAre, setYouAre] = useState(0);
 	let [winner, setWinner] = useState("");
-	const [inputValue, setInputValue] = useState('');
+	const [inputValue, setInputValue] = useState("");
 
 	useEffect(() => {
 		function onConnect() {
@@ -26,29 +43,28 @@ function App() {
 		}
 
 		function onMessage(data) {
-			if('message' in data){
+			if ("message" in data) {
 				console.log(data.message);
 			}
-			if ('state' in data) {
+			if ("state" in data) {
 				setGameState(data.state);
 			}
-			if ('bid' in data) {
-				setBid(data.bid.bidder + " bids " + data.bid.amount + " " + data.bid.pips);
+			if ("turnPlayer" in data) {
+				setTurnPlayer(data.turnPlayer);
 			}
-			if ('turn' in data) {
-				setTurn(data.turn);
+			if ("players" in data) {
+				setPlayers(data.players);
 			}
-			if ('players' in data) {//todo: turn this temp unpacking code into matching data structures on the server
-				let players = []
-				for(let i = 0; i < data.players.length; i++){
-					players.push(data.players[i].name + " has " + data.players[i].dice);
-				}
-				setPlayers(players);
+			if ("bid" in data) {
+				setBid(data.bid);
 			}
-			if ('youAre' in data) {
+			if ("playerDice" in data) {
+				setPlayerDice(data.playerDice);
+			}
+			if ("youAre" in data) {
 				setYouAre(data.youAre);
 			}
-			if ('winner' in data) {
+			if ("winner" in data) {
 				setWinner(data.winner);
 			}
 		}
@@ -67,25 +83,42 @@ function App() {
 	let move = () => {
 		socket.emit("move", inputValue);
 	};
-	
+
 	let challenge = () => {
 		socket.emit("move", "challenge");
 	};
-	
+
 	let ready = () => {
 		socket.emit("ready", "");
 	};
-	
+
 	const handleInputChange = (event) => {
-	  setInputValue(event.target.value);
+		setInputValue(event.target.value);
 	};
 
-	return (//todo: build frontend from paper designs, state variables
+	let playerOutput = [];
+	for (let i = youAre; i < players.length + youAre; i++) {
+		let j = i % players.length;
+		playerOutput.push(
+			<Player
+				dice={playerDice[j]}
+				id={players[j]}
+				isTurnPlayer={j == turnPlayer}
+			/>
+		);
+	}
+	return (
+		//todo: build frontend from paper designs, state variables, give stuff id's and classes and use css to move it around
 		<div>
-			<div id="output">{"turn: " + turn + ", bid: " + bid + ", players: " + players + ", you are " + youAre + ", winner: " + winner}</div>
+			<div id="players">{playerOutput}</div>
+			<div id="output">{bid}</div>
 			{gameState == "round" && (
 				<div>
-					<input id="input" value={inputValue} onChange={handleInputChange} ></input>{" "}
+					<input
+						id="input"
+						value={inputValue}
+						onChange={handleInputChange}
+					></input>{" "}
 					<button
 						id="bid"
 						onClick={move}
