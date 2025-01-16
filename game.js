@@ -13,6 +13,7 @@ class Player {
 	constructor(socket, spectator = false) {
 		this.socket = socket;
 		this.id = socket.id;
+		this.name = "";
 		this.diceCount = 5;
 		if(spectator){
 			this.diceCount = 0;
@@ -56,11 +57,12 @@ class Game {
 		}
 	}
 
-	ready(id) {
+	ready(id, name) {
 		if (!this.state == "round" || this.state == "over") {
 			return;
 		}
 		this.players[id].ready = true;
+		this.players[id].name = name.substring(0, 32);
 		this.startIfReady();
 	}
 
@@ -91,7 +93,7 @@ class Game {
 		}
 		if (action == "challenge" && this.bid["bidder"] > -1) {
 			this.bid["challenger"] = this.turnPlayer;
-			this.bid["challengerName"] = this.turnOrder[this.turnPlayer];
+			this.bid["challengerName"] = this.players[this.turnOrder[this.turnPlayer]].name;
 			this.challenge();
 		} else if (
 			action[0] < 1 ||
@@ -106,8 +108,7 @@ class Game {
 			this.bid["amount"] = action[0];
 			this.bid["pips"] = action[1];
 			this.bid["bidder"] = this.turnPlayer;
-			this.bid["bidderName"] = this.turnOrder[this.turnPlayer];
-
+			this.bid["bidderName"] = this.players[this.turnOrder[this.turnPlayer]].name;
 			this.turnPlayer = (this.turnPlayer + 1) % this.turnOrder.length;
 		}
 		this.sendGameState(false);
@@ -150,7 +151,7 @@ class Game {
 					for (let i = 0; i < this.turnOrder.length; i++) {
 						const player =
 							this.players[this.turnOrder[i]];
-						objectToSend.players.push(player.id);
+						objectToSend.players.push(player.name);
 						if (key == player.id) {
 							objectToSend.playerDice.push(player.dice);
 							objectToSend.youAre = i;
@@ -165,12 +166,12 @@ class Game {
 				for (let i = 0; i < this.turnOrder.length; i++) {
 					const player =
 						this.players[this.turnOrder[i]];
-						objectToSend.players.push(player.id);
+						objectToSend.players.push(player.name);
 						objectToSend.playerDice.push(player.dice);
 				}
 			}
 			if (this.state == "over") {
-				objectToSend.winner = this.turnOrder[0];
+				objectToSend.winner = this.players[this.turnOrder[0]].name;
 			}
 			if (this.state)
 				this.players[key].socket.emit("message", objectToSend);

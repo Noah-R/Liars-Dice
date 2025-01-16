@@ -31,6 +31,7 @@ function App() {
 	let [playerDice, setPlayerDice] = useState([]);
 	let [youAre, setYouAre] = useState(0);
 	let [winner, setWinner] = useState("");
+	let [name, setName] = useState("");
 
 	useEffect(() => {
 		function onConnect() {
@@ -57,14 +58,18 @@ function App() {
 				setPlayers(data.players);
 			}
 			if ("bid" in data) {
-				if(data.bid.bidder > -1){
-					let b = data.bid.bidderName + " bids " + data.bid.amount + " " + data.bid.pips;
-					if(data.bid.challenger > -1){
+				if (data.bid.bidder > -1) {
+					let b =
+						data.bid.bidderName +
+						" bids " +
+						data.bid.amount +
+						" " +
+						data.bid.pips;
+					if (data.bid.challenger > -1) {
 						b += ", " + data.bid.challengerName + " challenges";
 					}
 					setBid(b);
-				}
-				else{
+				} else {
 					setBid("No bid yet");
 				}
 				setAmount(data.bid.amount);
@@ -101,7 +106,7 @@ function App() {
 	};
 
 	let ready = () => {
-		socket.emit("ready", "");
+		socket.emit("ready", name);
 	};
 
 	const handleAmountChange = (event) => {
@@ -110,6 +115,10 @@ function App() {
 
 	const handlePipsChange = (event) => {
 		setPips(event.target.value);
+	};
+
+	const handleNameChange = (event) => {
+		setName(event.target.value);
 	};
 
 	let playerOutput = [];
@@ -130,22 +139,22 @@ function App() {
 			<div id="output">{bid}</div>
 			{gameState == "round" && (
 				<div>
-				<input
-					type="number"
-					id="amount"
-					min="1"
-					max="256"
-					value={amount}
-					onChange={handleAmountChange}
-				></input>
-				<input
-					type="number"
-					id="pips"
-					min="1"
-					max="6"
-					value={pips}
-					onChange={handlePipsChange}
-				></input>
+					<input
+						type="number"
+						id="amount"
+						min="1"
+						max="256"
+						value={amount}
+						onChange={handleAmountChange}
+					></input>
+					<input
+						type="number"
+						id="pips"
+						min="1"
+						max="6"
+						value={pips}
+						onChange={handlePipsChange}
+					></input>
 					<button
 						id="bid"
 						onClick={move}
@@ -160,10 +169,16 @@ function App() {
 					</button>
 				</div>
 			)}
-			{gameState == "over" && (
-				<h1>{winner} wins!</h1>
+			{gameState == "starting" && (
+				<input
+					id="name"
+					value={name}
+					onChange={handleNameChange}
+					placeholder="Enter Name"
+				></input>
 			)}
-			{gameState != "round" && (
+			{gameState == "over" && <h1>{winner} wins!</h1>}
+			{(gameState == "readying" || gameState == "starting") && (
 				<button
 					id="ready"
 					onClick={ready}
