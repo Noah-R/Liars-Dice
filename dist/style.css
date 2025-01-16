@@ -1,0 +1,26 @@
+html{
+    color-scheme: light dark;
+}
+
+div{
+    clear: left;
+}
+
+input{
+    margin: 2px;
+}
+
+button{
+    margin: 2px;
+}
+
+.player{
+    clear: none;
+    float: left;
+    padding: 5px;
+}
+
+.inputCluster{
+    clear: none;
+    float: left;
+}

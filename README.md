@@ -7,6 +7,7 @@ To Do:
     Play again
     Multiple games
     Leave game
+    Reconnect to game
     Grey out inactive options
     CSS/Dice icons
     Build out starting screen

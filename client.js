@@ -138,35 +138,43 @@ function App() {
 			<div id="players">{playerOutput}</div>
 			<div id="output">{bid}</div>
 			{gameState == "round" && (
-				<div>
-					<input
-						type="number"
-						id="amount"
-						min="1"
-						max="256"
-						value={amount}
-						onChange={handleAmountChange}
-					></input>
-					<input
-						type="number"
-						id="pips"
-						min="1"
-						max="6"
-						value={pips}
-						onChange={handlePipsChange}
-					></input>
-					<button
-						id="bid"
-						onClick={move}
-					>
-						Bid
-					</button>
-					<button
-						id="challenge"
-						onClick={challenge}
-					>
-						Challenge
-					</button>
+				<div id="inputs">
+					<div class="inputCluster">
+						<p>Amount</p>
+						<input
+							type="number"
+							id="amount"
+							min="1"
+							max="256"
+							value={amount}
+							onChange={handleAmountChange}
+						></input>
+					</div>
+					<div class="inputCluster">
+						<p>Die</p>
+						<input
+							type="number"
+							id="pips"
+							min="1"
+							max="6"
+							value={pips}
+							onChange={handlePipsChange}
+						></input>
+					</div>
+					<div class="inputCluster">
+						<button
+							id="bid"
+							onClick={move}
+						>
+							Bid
+						</button>
+						<button
+							id="challenge"
+							onClick={challenge}
+						>
+							Challenge
+						</button>
+					</div>
 				</div>
 			)}
 			{gameState == "starting" && (
