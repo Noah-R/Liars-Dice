@@ -80,7 +80,7 @@ class Game {
 			this.players[this.turnOrder[i]].rollDice();
 			this.players[this.turnOrder[i]].ready = false;
 		}
-		this.bid = { bidder: -1, amount: 0, pips: 0, challenger: -1 };
+		this.bid = { bidder: -1, bidderName: "", amount: 0, pips: 0, challenger: -1, challengerName: "" };
 		this.sendGameState(true);
 	}
 
@@ -91,6 +91,7 @@ class Game {
 		}
 		if (action == "challenge" && this.bid["bidder"] > -1) {
 			this.bid["challenger"] = this.turnPlayer;
+			this.bid["challengerName"] = this.turnOrder[this.turnPlayer];
 			this.challenge();
 		} else if (
 			action[0] < 1 ||
@@ -105,6 +106,7 @@ class Game {
 			this.bid["amount"] = action[0];
 			this.bid["pips"] = action[1];
 			this.bid["bidder"] = this.turnPlayer;
+			this.bid["bidderName"] = this.turnOrder[this.turnPlayer];
 
 			this.turnPlayer = (this.turnPlayer + 1) % this.turnOrder.length;
 		}
@@ -138,13 +140,7 @@ class Game {
 
 	sendGameState(startOfRound) {
 		for (var key of Object.keys(this.players)) {
-			let objectToSend = {state: this.state};
-			if(this.bid["bidder"] == -1){
-				objectToSend.bid = "No bid yet";
-			}
-			else{
-				objectToSend.bid = this.turnOrder[this.bid["bidder"]] + " bids " + this.bid["amount"] + " " + this.bid["pips"];
-			}
+			let objectToSend = {state: this.state, bid: this.bid};
 			if (this.state == "round") {
 				objectToSend.turnPlayer = this.turnPlayer;
 				if (startOfRound) {
@@ -164,7 +160,6 @@ class Game {
 					}
 				}
 			} else {
-				objectToSend.bid += ", " + this.turnOrder[this.bid["challenger"]] + " challenges";
 				objectToSend.players = [];
 				objectToSend.playerDice = [];
 				for (let i = 0; i < this.turnOrder.length; i++) {

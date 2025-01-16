@@ -24,12 +24,13 @@ function App() {
 	const [isConnected, setIsConnected] = useState(socket.connected);
 	let [gameState, setGameState] = useState("starting");
 	let [bid, setBid] = useState([]);
+	let [amount, setAmount] = useState(0);
+	let [pips, setPips] = useState(0);
 	let [turnPlayer, setTurnPlayer] = useState(0);
 	let [players, setPlayers] = useState([]);
 	let [playerDice, setPlayerDice] = useState([]);
 	let [youAre, setYouAre] = useState(0);
 	let [winner, setWinner] = useState("");
-	const [inputValue, setInputValue] = useState("");
 
 	useEffect(() => {
 		function onConnect() {
@@ -56,7 +57,18 @@ function App() {
 				setPlayers(data.players);
 			}
 			if ("bid" in data) {
-				setBid(data.bid);
+				if(data.bid.bidder > -1){
+					let b = data.bid.bidderName + " bids " + data.bid.amount + " " + data.bid.pips;
+					if(data.bid.challenger > -1){
+						b += ", " + data.bid.challengerName + " challenges";
+					}
+					setBid(b);
+				}
+				else{
+					setBid("No bid yet");
+				}
+				setAmount(data.bid.amount);
+				setPips(data.bid.pips);
 			}
 			if ("playerDice" in data) {
 				setPlayerDice(data.playerDice);
@@ -81,7 +93,7 @@ function App() {
 	}, []);
 
 	let move = () => {
-		socket.emit("move", inputValue);
+		socket.emit("move", [amount, pips]);
 	};
 
 	let challenge = () => {
@@ -92,8 +104,12 @@ function App() {
 		socket.emit("ready", "");
 	};
 
-	const handleInputChange = (event) => {
-		setInputValue(event.target.value);
+	const handleAmountChange = (event) => {
+		setAmount(event.target.value);
+	};
+
+	const handlePipsChange = (event) => {
+		setPips(event.target.value);
 	};
 
 	let playerOutput = [];
@@ -114,11 +130,22 @@ function App() {
 			<div id="output">{bid}</div>
 			{gameState == "round" && (
 				<div>
-					<input
-						id="input"
-						value={inputValue}
-						onChange={handleInputChange}
-					></input>{" "}
+				<input
+					type="number"
+					id="amount"
+					min="1"
+					max="256"
+					value={amount}
+					onChange={handleAmountChange}
+				></input>
+				<input
+					type="number"
+					id="pips"
+					min="1"
+					max="6"
+					value={pips}
+					onChange={handlePipsChange}
+				></input>
 					<button
 						id="bid"
 						onClick={move}
@@ -132,6 +159,9 @@ function App() {
 						Challenge
 					</button>
 				</div>
+			)}
+			{gameState == "over" && (
+				<h1>{winner} wins!</h1>
 			)}
 			{gameState != "round" && (
 				<button
