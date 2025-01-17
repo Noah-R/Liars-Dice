@@ -1,9 +1,5 @@
-html{
+*{
     color-scheme: light dark;
-}
-
-div{
-    clear: left;
 }
 
 input{
@@ -15,12 +11,27 @@ button{
 }
 
 .player{
-    clear: none;
-    float: left;
     padding: 5px;
 }
 
-.inputCluster{
-    clear: none;
-    float: left;
+.inputBar{
+    position: fixed;
+    top: 60%;
+    left: 40%;
+    width: 20%;
+}
+
+.middle{
+    position: fixed;
+    top: 30%;
+    left: 40%;
+    width: 20%;
+}
+
+.horizontal{
+    display: inline-block;
+}
+
+.center {
+    text-align: center;
 }

@@ -10,10 +10,10 @@ function Player(props) {
 		dice += "[" + props.dice[i] + "]";
 	}
 	return (
-		<div class="player">
-			<p>{dice}</p>
-			<h3>
-				{props.id}
+		<div class="player horizontal">
+			<p class="center">{dice}</p>
+			<h3 class="center">
+				{props.name}
 				{props.isTurnPlayer && " to play"}
 			</h3>
 		</div>
@@ -122,78 +122,86 @@ function App() {
 	};
 
 	let playerOutput = [];
-	for (let i = youAre; i < players.length + youAre; i++) {
+	for (let i = youAre + 1; i < players.length + youAre; i++) {
 		let j = i % players.length;
 		playerOutput.push(
 			<Player
 				dice={playerDice[j]}
-				id={players[j]}
+				name={players[j]}
 				isTurnPlayer={j == turnPlayer}
 			/>
 		);
 	}
 	return (
-		//todo: build frontend from paper designs, state variables, give stuff id's and classes and use css to move it around
 		<div>
-			<div id="players">{playerOutput}</div>
-			<div id="output">{bid}</div>
+			<div class="center">{playerOutput}</div>
 			{gameState == "round" && (
-				<div id="inputs">
-					<div class="inputCluster">
-						<p>Amount</p>
+				<div class="inputBar center">
+					<div class="center">
+						<Player
+							dice={playerDice[youAre]}
+							name={players[youAre]}
+							isTurnPlayer={youAre == turnPlayer}
+						/>
+					</div>
+					<div class="center">{bid}</div>
+					<div class="horizontal">
+						<p class="center">Amount</p>
 						<input
 							type="number"
-							id="amount"
 							min="1"
 							max="256"
 							value={amount}
 							onChange={handleAmountChange}
 						></input>
 					</div>
-					<div class="inputCluster">
-						<p>Die</p>
+					<div class="horizontal">
+						<p class="center">Die</p>
 						<input
 							type="number"
-							id="pips"
 							min="1"
 							max="6"
 							value={pips}
 							onChange={handlePipsChange}
 						></input>
 					</div>
-					<div class="inputCluster">
-						<button
-							id="bid"
-							onClick={move}
-						>
-							Bid
-						</button>
-						<button
-							id="challenge"
-							onClick={challenge}
-						>
-							Challenge
-						</button>
+					<div class="horizontal">
+						<button onClick={move}>Bid</button>
+						<button onClick={challenge}>Challenge</button>
 					</div>
 				</div>
 			)}
 			{gameState == "starting" && (
-				<input
-					id="name"
-					value={name}
-					onChange={handleNameChange}
-					placeholder="Enter Name"
-				></input>
+				<div class="middle">
+					<input
+						value={name}
+						onChange={handleNameChange}
+						placeholder="Enter Name"
+					></input>
+					<button onClick={ready}>Ready</button>
+				</div>
+			)}
+			{gameState == "readying" && (
+				<div>
+					<button
+						class="middle"
+						onClick={ready}
+					>
+						Ready
+					</button>
+					<div class="inputBar center">
+						<div class="center">
+							<Player
+								dice={playerDice[youAre]}
+								name={players[youAre]}
+								isTurnPlayer={youAre == turnPlayer}
+							/>
+						</div>
+						<div class="center">{bid}</div>
+					</div>
+				</div>
 			)}
 			{gameState == "over" && <h1>{winner} wins!</h1>}
-			{(gameState == "readying" || gameState == "starting") && (
-				<button
-					id="ready"
-					onClick={ready}
-				>
-					Ready
-				</button>
-			)}
 		</div>
 	);
 }
