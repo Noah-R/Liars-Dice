@@ -121,10 +121,10 @@ function App() {
 		setName(event.target.value);
 	};
 
-	let playerOutput = [];
+	let opponentOutput = [];
 	for (let i = youAre + 1; i < players.length + youAre; i++) {
 		let j = i % players.length;
-		playerOutput.push(
+		opponentOutput.push(
 			<Player
 				dice={playerDice[j]}
 				name={players[j]}
@@ -132,76 +132,83 @@ function App() {
 			/>
 		);
 	}
+
+	let selfAndBid = [
+		<div class="center">
+			<Player
+				dice={playerDice[youAre]}
+				name={players[youAre]}
+				isTurnPlayer={youAre == turnPlayer}
+			/>
+		</div>,
+		<div class="center">{bid}</div>,
+	];
+
+	let startingScreen = [
+		<div class="middle">
+			<input
+				value={name}
+				onChange={handleNameChange}
+				placeholder="Enter Name"
+			></input>
+			<button onClick={ready}>Ready</button>
+		</div>,
+	];
+
+	let roundScreen = [
+		<div class="center">{opponentOutput}</div>,
+		<div class="inputBar center">
+			{selfAndBid}
+			<div class="horizontal">
+				<p class="center">Amount</p>
+				<input
+					type="number"
+					min="1"
+					max="256"
+					value={amount}
+					onChange={handleAmountChange}
+				></input>
+			</div>
+			<div class="horizontal">
+				<p class="center">Die</p>
+				<input
+					type="number"
+					min="1"
+					max="6"
+					value={pips}
+					onChange={handlePipsChange}
+				></input>
+			</div>
+			<div class="horizontal">
+				<button onClick={move}>Bid</button>
+				<button onClick={challenge}>Challenge</button>
+			</div>
+		</div>,
+	];
+
+	let readyingScreen = [
+		<div class="center">{opponentOutput}</div>,
+		<button
+			class="middle"
+			onClick={ready}
+		>
+			Ready
+		</button>,
+		<div class="inputBar center">{selfAndBid}</div>,
+	];
+
+	let overScreen = [
+		<div class="center">{opponentOutput}</div>,
+		<h1 class="middle">{winner} wins!</h1>,
+		<div class="inputBar center">{selfAndBid}</div>,
+	];
+
 	return (
 		<div>
-			<div class="center">{playerOutput}</div>
-			{gameState == "round" && (
-				<div class="inputBar center">
-					<div class="center">
-						<Player
-							dice={playerDice[youAre]}
-							name={players[youAre]}
-							isTurnPlayer={youAre == turnPlayer}
-						/>
-					</div>
-					<div class="center">{bid}</div>
-					<div class="horizontal">
-						<p class="center">Amount</p>
-						<input
-							type="number"
-							min="1"
-							max="256"
-							value={amount}
-							onChange={handleAmountChange}
-						></input>
-					</div>
-					<div class="horizontal">
-						<p class="center">Die</p>
-						<input
-							type="number"
-							min="1"
-							max="6"
-							value={pips}
-							onChange={handlePipsChange}
-						></input>
-					</div>
-					<div class="horizontal">
-						<button onClick={move}>Bid</button>
-						<button onClick={challenge}>Challenge</button>
-					</div>
-				</div>
-			)}
-			{gameState == "starting" && (
-				<div class="middle">
-					<input
-						value={name}
-						onChange={handleNameChange}
-						placeholder="Enter Name"
-					></input>
-					<button onClick={ready}>Ready</button>
-				</div>
-			)}
-			{gameState == "readying" && (
-				<div>
-					<button
-						class="middle"
-						onClick={ready}
-					>
-						Ready
-					</button>
-					<div class="inputBar center">
-						<div class="center">
-							<Player
-								dice={playerDice[youAre]}
-								name={players[youAre]}
-								isTurnPlayer={youAre == turnPlayer}
-							/>
-						</div>
-						<div class="center">{bid}</div>
-					</div>
-				</div>
-			)}
-			{gameState == "over" && <h1>{winner} wins!</h1>}
+			{gameState == "round" && <div>{roundScreen}</div>}
+			{gameState == "starting" && <div>{startingScreen}</div>}
+			{gameState == "readying" && <div>{readyingScreen}</div>}
+			{gameState == "over" && <div>{overScreen}</div>}
 		</div>
 	);
 }
