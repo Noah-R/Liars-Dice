@@ -15,7 +15,10 @@ g1 = new game.Game();
 
 io.on("connection", (socket) => {
 	console.log(socket.id + " connected");
-	g1.addPlayer(socket);
+	if(!(socket.id in g1.players)){
+		g1.addPlayer(socket);
+	}
+	g1.players[socket.id].sendGameState(true);
 	socket.emit("message", {message: "you are " + socket.id});
 
 	socket.on("message", (data) => {

@@ -1,7 +1,6 @@
 https://en.wikipedia.org/wiki/Liar%27s_dice
 
 To Do:
-    Reconnect to game
     CSS/Dice icons
     Better input selectors
     Spectate
@@ -14,5 +13,6 @@ To Do:
     Grey out inactive options
     Build out starting screen
     Waiting for ... after readying
+    Let players reconnect(requires using something other than socket.id, this may not be possible)
     Testing
     Deployment

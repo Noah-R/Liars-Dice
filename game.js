@@ -10,8 +10,9 @@ const shuffle = function (array) {
 };
 
 class Player {
-	constructor(socket, spectator = false) {
+	constructor(socket, game, spectator = false) {
 		this.socket = socket;
+		this.game = game
 		this.id = socket.id;
 		this.name = "";
 		this.diceCount = 5;
@@ -38,6 +39,41 @@ class Player {
 			this.dice.push(Math.floor(Math.random() * 6) + 1);
 		}
 	}
+
+	sendGameState(sendPlayers,){
+		let objectToSend = {state: this.game.state, bid: this.game.bid};
+			
+		if (this.game.state == "round") {
+			objectToSend.turnPlayer = this.game.turnPlayer;
+		}
+
+		if (sendPlayers) {
+			objectToSend.players = [];
+			objectToSend.playerDice = [];
+			objectToSend.youAre = -1;
+			for (let i = 0; i < this.game.turnOrder.length; i++) {
+				const player =
+					this.game.players[this.game.turnOrder[i]];
+				objectToSend.players.push(player.name);
+				if (this.id == player.id) {
+					objectToSend.playerDice.push(player.dice);
+					objectToSend.youAre = i;
+				}
+				else if(this.game.state != "round"){
+					objectToSend.playerDice.push(player.dice);
+				}
+				else {
+					objectToSend.playerDice.push(player.dice.map(number => number * 0));
+				}
+			}
+		}
+
+		if (this.game.state == "over") {
+			objectToSend.winner = this.game.players[this.game.turnOrder[0]].name;
+		}
+
+		this.socket.emit("message", objectToSend);
+	}
 }
 
 class Game {
@@ -51,7 +87,7 @@ class Game {
 
 	addPlayer(socket) {
 		if (this.state == "starting") {
-			let player = new Player(socket);
+			let player = new Player(socket, this);
 			this.players[socket.id] = player;
 			this.turnOrder.push(socket.id);
 		}
@@ -141,38 +177,7 @@ class Game {
 
 	sendGameState(sendPlayers) {
 		for (var key of Object.keys(this.players)) {
-			let objectToSend = {state: this.state, bid: this.bid};
-			
-			if (this.state == "round") {
-				objectToSend.turnPlayer = this.turnPlayer;
-			}
-
-			if (sendPlayers) {
-				objectToSend.players = [];
-				objectToSend.playerDice = [];
-				objectToSend.youAre = -1;
-				for (let i = 0; i < this.turnOrder.length; i++) {
-					const player =
-						this.players[this.turnOrder[i]];
-					objectToSend.players.push(player.name);
-					if (key == player.id) {
-						objectToSend.playerDice.push(player.dice);
-						objectToSend.youAre = i;
-					}
-					else if(this.state != "round"){
-						objectToSend.playerDice.push(player.dice);
-					}
-					else {
-						objectToSend.playerDice.push(player.dice.map(number => number * 0));
-					}
-				}
-			}
-
-			if (this.state == "over") {
-				objectToSend.winner = this.players[this.turnOrder[0]].name;
-			}
-
-			this.players[key].socket.emit("message", objectToSend);
+			this.players[key].sendGameState(sendPlayers, this);
 		}
 	}
 }
