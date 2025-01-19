@@ -111,7 +111,7 @@ class Game {
 			this.bid["bidderName"] = this.players[this.turnOrder[this.turnPlayer]].name;
 			this.turnPlayer = (this.turnPlayer + 1) % this.turnOrder.length;
 		}
-		this.sendGameState(false);
+		this.sendGameState(this.bid["challenger"] > -1);
 		return true;
 	}
 
@@ -139,42 +139,40 @@ class Game {
 		}
 	}
 
-	sendGameState(startOfRound) {
+	sendGameState(sendPlayers) {
 		for (var key of Object.keys(this.players)) {
 			let objectToSend = {state: this.state, bid: this.bid};
+			
 			if (this.state == "round") {
 				objectToSend.turnPlayer = this.turnPlayer;
-				if (startOfRound) {
-					objectToSend.players = [];
-					objectToSend.playerDice = [];
-					objectToSend.youAre = -1;
-					for (let i = 0; i < this.turnOrder.length; i++) {
-						const player =
-							this.players[this.turnOrder[i]];
-						objectToSend.players.push(player.name);
-						if (key == player.id) {
-							objectToSend.playerDice.push(player.dice);
-							objectToSend.youAre = i;
-						} else {
-							objectToSend.playerDice.push(player.dice.map(number => number * 0));
-						}
-					}
-				}
-			} else {
+			}
+
+			if (sendPlayers) {
 				objectToSend.players = [];
 				objectToSend.playerDice = [];
+				objectToSend.youAre = -1;
 				for (let i = 0; i < this.turnOrder.length; i++) {
 					const player =
 						this.players[this.turnOrder[i]];
-						objectToSend.players.push(player.name);
+					objectToSend.players.push(player.name);
+					if (key == player.id) {
 						objectToSend.playerDice.push(player.dice);
+						objectToSend.youAre = i;
+					}
+					else if(this.state != "round"){
+						objectToSend.playerDice.push(player.dice);
+					}
+					else {
+						objectToSend.playerDice.push(player.dice.map(number => number * 0));
+					}
 				}
 			}
+
 			if (this.state == "over") {
 				objectToSend.winner = this.players[this.turnOrder[0]].name;
 			}
-			if (this.state)
-				this.players[key].socket.emit("message", objectToSend);
+
+			this.players[key].socket.emit("message", objectToSend);
 		}
 	}
 }

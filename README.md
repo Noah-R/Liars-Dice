@@ -1,6 +1,7 @@
 https://en.wikipedia.org/wiki/Liar%27s_dice
 
 To Do:
+    Code cleanup on client
     Reconnect to game
     CSS/Dice icons
     Better input selectors
@@ -13,6 +14,5 @@ To Do:
     Grey out inactive options
     Build out starting screen
     Waiting for ... after readying
-    Code cleanup
     Testing
     Deployment
