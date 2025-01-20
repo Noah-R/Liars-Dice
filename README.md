@@ -14,5 +14,6 @@ To Do:
     Build out starting screen
     Waiting for ... after readying
     Let players reconnect(requires using something other than socket.id, this may not be possible)
+    Document functions
     Testing
     Deployment
