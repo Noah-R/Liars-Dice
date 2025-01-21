@@ -1,7 +1,6 @@
 https://en.wikipedia.org/wiki/Liar%27s_dice
 
 To Do:
-    Dice/Selector icons
     Spectate
         Show spectators
         Treat eliminated players differently from spectators(final loser currently "get cannot read length of undefined" error on client)

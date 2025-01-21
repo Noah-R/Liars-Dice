@@ -3,11 +3,12 @@ import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 
 const socket = io("http://localhost:3000");
+const diceFaces = ["🎲", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"]
 
 function Player(props) {
 	let dice = "";
 	for (let i = 0; i < props.dice.length; i++) {
-		dice += "[" + props.dice[i] + "]";
+		dice += diceFaces[props.dice[i]];
 	}
 	return (
 		<div class="player horizontal">
@@ -23,9 +24,10 @@ function Player(props) {
 function Selector(props) {
 	return (
 		<div class="horizontal">
-			<button onClick={props.up}>Up</button>
-			<p>{props.value}</p>
-			<button onClick={props.down}>Down</button>
+			<button onClick={props.up}>🔼</button>
+			{props.value < props.display.length && <p>{props.display[props.value]}</p>}
+			{props.value >= props.display.length && <p>{props.value}</p>}
+			<button onClick={props.down}>🔽</button>
 		</div>
 	)
 }
@@ -74,7 +76,7 @@ function App() {
 						" bids " +
 						data.bid.amount +
 						" " +
-						data.bid.pips;
+						diceFaces[data.bid.pips];
 					if (data.bid.challenger > -1) {
 						b += ", " + data.bid.challengerName + " challenges";
 					}
@@ -167,11 +169,13 @@ function App() {
 				up={() => {setAmount(Math.min(amount + 1, 256))}}
 				down={() => {setAmount(Math.max(amount - 1, 1))}}
 				value={amount}
+				display={[]}
 			/>
 			<Selector
 				up={() => {setPips(Math.min(pips + 1, 6))}}				
 				down={() => {setPips(Math.max(pips - 1, 1))}}
 				value={pips}
+				display={diceFaces}
 			/>
 			<div class="horizontal">
 				<button onClick={move}>Bid</button>
