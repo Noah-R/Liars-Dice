@@ -1,17 +1,37 @@
 https://en.wikipedia.org/wiki/Liar%27s_dice
 
-To Do:
-    Spectate
-        Show spectators
-        Let players spectate from start
-    Play again
-    Multiple games
-    Leave game
-    Grey out inactive options
-    Build out starting screen
-    Waiting for ... after readying
+## Roadmap
+
+### Must haves
+
+    Play again after game end
+
+    Let players leave during starting phase
+
     Let players reconnect(requires using something other than socket.id, this may not be possible)
-    CSS
+    
+    Handle multiple games
+    
+### DevOps
+
     Document functions
+
     Testing
+
     Deployment
+
+### Nice to haves
+
+    CSS
+
+    Build out starting screen
+
+    Show spectator list
+
+    Let players spectate from start
+
+    Grey out inactive options
+
+    Bid validity checking on ui
+    
+    Waiting for ... after readying
