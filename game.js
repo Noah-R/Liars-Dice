@@ -132,6 +132,7 @@ class Game {
 			this.bid["challengerName"] = this.players[this.turnOrder[this.turnPlayer]].name;
 			this.challenge();
 		} else if (
+			action == "challenge" ||
 			action[0] < 1 ||
 			action[1] < 1 ||
 			action[1] > 6 ||
