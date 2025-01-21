@@ -1,8 +1,7 @@
 https://en.wikipedia.org/wiki/Liar%27s_dice
 
 To Do:
-    CSS/Dice icons
-    Better input selectors
+    Dice/Selector icons
     Spectate
         Show spectators
         Treat eliminated players differently from spectators(final loser currently "get cannot read length of undefined" error on client)
@@ -14,6 +13,7 @@ To Do:
     Build out starting screen
     Waiting for ... after readying
     Let players reconnect(requires using something other than socket.id, this may not be possible)
+    CSS
     Document functions
     Testing
     Deployment

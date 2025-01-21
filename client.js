@@ -20,6 +20,16 @@ function Player(props) {
 	);
 }
 
+function Selector(props) {
+	return (
+		<div class="horizontal">
+			<button onClick={props.up}>Up</button>
+			<p>{props.value}</p>
+			<button onClick={props.down}>Down</button>
+		</div>
+	)
+}
+
 function App() {
 	const [isConnected, setIsConnected] = useState(socket.connected);
 	let [gameState, setGameState] = useState("starting");
@@ -69,11 +79,13 @@ function App() {
 						b += ", " + data.bid.challengerName + " challenges";
 					}
 					setBid(b);
+					setAmount(data.bid.amount);
+					setPips(data.bid.pips);
 				} else {
 					setBid("No bid yet");
+					setAmount(1);
+					setPips(1);
 				}
-				setAmount(data.bid.amount);
-				setPips(data.bid.pips);
 			}
 			if ("playerDice" in data) {
 				setPlayerDice(data.playerDice);
@@ -107,14 +119,6 @@ function App() {
 
 	let ready = () => {
 		socket.emit("ready", name);
-	};
-
-	const handleAmountChange = (event) => {
-		setAmount(event.target.value);
-	};
-
-	const handlePipsChange = (event) => {
-		setPips(event.target.value);
 	};
 
 	const handleNameChange = (event) => {
@@ -159,26 +163,16 @@ function App() {
 		<div class="center">{opponentOutput}</div>,
 		<div class="inputBar center">
 			{selfAndBid}
-			<div class="horizontal">
-				<p class="center">Amount</p>
-				<input
-					type="number"
-					min="1"
-					max="256"
-					value={amount}
-					onChange={handleAmountChange}
-				></input>
-			</div>
-			<div class="horizontal">
-				<p class="center">Die</p>
-				<input
-					type="number"
-					min="1"
-					max="6"
-					value={pips}
-					onChange={handlePipsChange}
-				></input>
-			</div>
+			<Selector
+				up={() => {setAmount(Math.min(amount + 1, 256))}}
+				down={() => {setAmount(Math.max(amount - 1, 1))}}
+				value={amount}
+			/>
+			<Selector
+				up={() => {setPips(Math.min(pips + 1, 6))}}				
+				down={() => {setPips(Math.max(pips - 1, 1))}}
+				value={pips}
+			/>
 			<div class="horizontal">
 				<button onClick={move}>Bid</button>
 				<button onClick={challenge}>Challenge</button>
