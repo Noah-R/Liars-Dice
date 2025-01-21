@@ -3,8 +3,7 @@ https://en.wikipedia.org/wiki/Liar%27s_dice
 To Do:
     Spectate
         Show spectators
-        Treat eliminated players differently from spectators(final loser currently "get cannot read length of undefined" error on client)
-        Switch between spectating and playing
+        Let players spectate from start
     Play again
     Multiple games
     Leave game

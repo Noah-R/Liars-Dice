@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 
 const socket = io("http://localhost:3000");
-const diceFaces = ["🎲", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"]
+const diceFaces = ["🎲", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 
 function Player(props) {
 	let dice = "";
@@ -25,11 +25,13 @@ function Selector(props) {
 	return (
 		<div class="horizontal">
 			<button onClick={props.up}>🔼</button>
-			{props.value < props.display.length && <p>{props.display[props.value]}</p>}
+			{props.value < props.display.length && (
+				<p>{props.display[props.value]}</p>
+			)}
 			{props.value >= props.display.length && <p>{props.value}</p>}
 			<button onClick={props.down}>🔽</button>
 		</div>
-	)
+	);
 }
 
 function App() {
@@ -128,24 +130,29 @@ function App() {
 	};
 
 	let opponentOutput = [];
-	for (let i = youAre + 1; i < players.length + youAre; i++) {
-		let j = i % players.length;
+	for (let i = 0; i < players.length; i++) {
 		opponentOutput.push(
 			<Player
-				dice={playerDice[j]}
-				name={players[j]}
-				isTurnPlayer={j == turnPlayer}
+				dice={playerDice[i]}
+				name={players[i]}
+				isTurnPlayer={i == turnPlayer}
 			/>
 		);
+	}
+	if(youAre > -1){
+		opponentOutput = opponentOutput.slice(youAre + 1).concat(opponentOutput.slice(0, youAre));
 	}
 
 	let selfAndBid = [
 		<div class="center">
-			<Player
-				dice={playerDice[youAre]}
-				name={players[youAre]}
-				isTurnPlayer={youAre == turnPlayer}
-			/>
+			{youAre > -1 && (
+				<Player
+					dice={playerDice[youAre]}
+					name={players[youAre]}
+					isTurnPlayer={youAre == turnPlayer}
+				/>
+			)}
+			{youAre == -1 && <p>You are spectating</p>}
 		</div>,
 		<div class="center">{bid}</div>,
 	];
@@ -166,14 +173,22 @@ function App() {
 		<div class="inputBar center">
 			{selfAndBid}
 			<Selector
-				up={() => {setAmount(Math.min(amount + 1, 256))}}
-				down={() => {setAmount(Math.max(amount - 1, 1))}}
+				up={() => {
+					setAmount(Math.min(amount + 1, 256));
+				}}
+				down={() => {
+					setAmount(Math.max(amount - 1, 1));
+				}}
 				value={amount}
 				display={[]}
 			/>
 			<Selector
-				up={() => {setPips(Math.min(pips + 1, 6))}}				
-				down={() => {setPips(Math.max(pips - 1, 1))}}
+				up={() => {
+					setPips(Math.min(pips + 1, 6));
+				}}
+				down={() => {
+					setPips(Math.max(pips - 1, 1));
+				}}
 				value={pips}
 				display={diceFaces}
 			/>
