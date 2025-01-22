@@ -4,7 +4,7 @@ https://en.wikipedia.org/wiki/Liar%27s_dice
 
 ### Must haves
     
-    Let players reconnect(requires using something other than socket.id, this may not be possible)
+    Let players reconnect(use rooms)
 
     UI review
     
