@@ -212,7 +212,11 @@ function App() {
 
 	let overScreen = [
 		<div class="center">{opponentOutput}</div>,
-		<h1 class="middle">{winner} wins!</h1>,
+		<div class="middle">		
+			<h1>{winner} wins!</h1>
+			<br></br>
+			<button onClick={ready}>Ready</button>
+		</div>,
 		<div class="inputBar center">{selfAndBid}</div>,
 	];
 

@@ -86,6 +86,19 @@ class Game {
 		this.turnPlayer = 0;
 	}
 
+	restart(){
+		this.state = "starting";
+		this.turnOrder = this.turnOrder.concat(this.spectators);
+		this.spectators = [];
+		this.bid = {};
+		this.turnPlayer = 0;
+		
+		for (let i = 0; i < this.turnOrder.length; i++) {
+			this.players[this.turnOrder[i]].ready = false;
+		}
+		this.sendGameState();
+	}
+
 	addPlayer(socket) {
 		if (this.state == "starting") {
 			let player = new Player(socket, this);
@@ -95,7 +108,7 @@ class Game {
 	}
 
 	ready(id, name) {
-		if (!this.state == "round" || this.state == "over") {
+		if (!this.state == "round") {
 			return;
 		}
 		this.players[id].ready = true;
@@ -112,6 +125,10 @@ class Game {
 
 		if (this.state == "starting") {
 			shuffle(this.turnOrder);
+		}
+		else if(this.state == "over") {
+			this.restart();
+			return true;
 		}
 		else {
 			if (this.players[this.turnOrder[this.turnPlayer]].diceCount == 0) {
