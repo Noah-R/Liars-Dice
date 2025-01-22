@@ -12,10 +12,10 @@ function Player(props) {
 	}
 	return (
 		<div class="player horizontal">
-			<p class="center">{dice}</p>
+			<p class="center big">{dice}</p>
 			<h3 class="center">
 				{props.name}
-				{props.isTurnPlayer && " to play"}
+				{props.isTurnPlayer && <i> to play</i>}
 			</h3>
 		</div>
 	);
@@ -24,12 +24,12 @@ function Player(props) {
 function Selector(props) {
 	return (
 		<div class="horizontal">
-			<button onClick={props.up}>🔼</button>
+			<button class="translucent" onClick={props.up}>🔼</button>
 			{props.value < props.display.length && (
-				<p>{props.display[props.value]}</p>
+				<p class="big">{props.display[props.value]}</p>
 			)}
-			{props.value >= props.display.length && <p>{props.value}</p>}
-			<button onClick={props.down}>🔽</button>
+			{props.value >= props.display.length && <p class="big">{props.value}</p>}
+			<button class="translucent"  onClick={props.down}>🔽</button>
 		</div>
 	);
 }
@@ -153,12 +153,14 @@ function App() {
 			/>
 		);
 	}
-	if(youAre > -1){
-		opponentOutput = opponentOutput.slice(youAre + 1).concat(opponentOutput.slice(0, youAre));
+	if (youAre > -1) {
+		opponentOutput = opponentOutput
+			.slice(youAre + 1)
+			.concat(opponentOutput.slice(0, youAre));
 	}
 
 	let selfAndBid = [
-		<div class="center">
+		<div class="center horizontal">
 			{youAre > -1 && (
 				<Player
 					dice={playerDice[youAre]}
@@ -176,20 +178,19 @@ function App() {
 			<input
 				value={room}
 				onChange={handleRoomChange}
-				placeholder="Enter Name"
+				placeholder="Enter Room Code"
 				maxlength="32"
 			></input>
 			<button onClick={join}>Join</button>
 		</div>,
 	];
 
-
 	let startingScreen = [
 		<div class="middle">
 			<input
 				value={name}
 				onChange={handleNameChange}
-				placeholder="Enter Name"
+				placeholder="Enter Your Name"
 				maxlength="32"
 			></input>
 			<button onClick={ready}>Ready</button>
@@ -241,7 +242,7 @@ function App() {
 
 	let overScreen = [
 		<div class="center">{opponentOutput}</div>,
-		<div class="middle">		
+		<div class="middle">
 			<h1>{winner} wins!</h1>
 			<br></br>
 			<button onClick={ready}>Ready</button>

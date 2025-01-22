@@ -16,7 +16,7 @@ let players = {}//#socket.id: room name
 
 io.on("connection", (socket) => {
 	console.log(socket.id + " connected");
-	socket.emit("message", {message: "you are " + socket.id});
+	socket.emit("message", {message: "you are " + socket.id, state: "lobby"});
 	players[socket.id] = "";
 
 	socket.on("message", (data) => {

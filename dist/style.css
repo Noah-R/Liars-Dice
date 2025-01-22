@@ -1,5 +1,6 @@
 *{
     color-scheme: light dark;
+    font-size: 24px;
 }
 
 input{
@@ -8,6 +9,7 @@ input{
 
 button{
     margin: 2px;
+    cursor: pointer;
 }
 
 .player{
@@ -16,14 +18,14 @@ button{
 
 .inputBar{
     position: fixed;
-    top: 60%;
+    top: 40%;
     left: 40%;
     width: 20%;
 }
 
 .middle{
     position: fixed;
-    top: 30%;
+    top: 25%;
     left: 40%;
     width: 20%;
 }
@@ -34,4 +36,14 @@ button{
 
 .center {
     text-align: center;
+}
+
+.big {
+    font-size: 36px;
+}
+
+.translucent {
+    padding: 0;
+    border: none;
+    background: none;
 }
