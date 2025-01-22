@@ -11,27 +11,43 @@ const io = new Server(httpServer, {
 	//options go here
 });
 
-g1 = new game.Game();
+let games = {}//room name: game object
+let players = {}//#socket.id: room name
 
 io.on("connection", (socket) => {
 	console.log(socket.id + " connected");
-	if(!(socket.id in g1.players)){
-		g1.addPlayer(socket);
-	}
-	g1.players[socket.id].sendGameState(true);
 	socket.emit("message", {message: "you are " + socket.id});
+	players[socket.id] = "";
 
 	socket.on("message", (data) => {
 		console.log(data);
 		socket.emit("message", {message: "received " + data});
 	});
 
+	socket.on("join", (data) => {
+		room = data.substring(0, 32)
+		if(!(room in games)){
+			games[room] = new game.Game();
+		}
+		games[room].addPlayer(socket);
+		games[room].players[socket.id].sendGameState(true);
+		players[socket.id] = room;
+	});
+
+	socket.on("leave", (data) => {
+		games[players[socket.id]].removePlayer(socket);
+		if(games[players[socket.id]].players.length == 0){		
+			delete games[players[socket.id]];
+		}
+		players[socket.id] = "";
+	});
+
 	socket.on("ready", (data) => {
-		g1.ready(socket.id, data);
+		games[players[socket.id]].ready(socket.id, data.substring(0, 32));
 	});
 
 	socket.on("move", (data) => {
-		g1.takeTurn(socket.id, data);
+		games[players[socket.id]].takeTurn(socket.id, data);
 	});
 });
 

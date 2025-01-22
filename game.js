@@ -12,11 +12,11 @@ const shuffle = function (array) {
 class Player {
 	constructor(socket, game, spectator = false) {
 		this.socket = socket;
-		this.game = game
+		this.game = game;
 		this.id = socket.id;
 		this.name = "";
 		this.diceCount = 5;
-		if(spectator){
+		if (spectator) {
 			this.diceCount = 0;
 		}
 		this.dice = [];
@@ -40,9 +40,9 @@ class Player {
 		}
 	}
 
-	sendGameState(sendPlayers,){
-		let objectToSend = {state: this.game.state, bid: this.game.bid};
-			
+	sendGameState(sendPlayers) {
+		let objectToSend = { state: this.game.state, bid: this.game.bid };
+
 		if (this.game.state == "round") {
 			objectToSend.turnPlayer = this.game.turnPlayer;
 		}
@@ -52,24 +52,26 @@ class Player {
 			objectToSend.playerDice = [];
 			objectToSend.youAre = -1;
 			for (let i = 0; i < this.game.turnOrder.length; i++) {
-				const player =
-					this.game.players[this.game.turnOrder[i]];
+				const player = this.game.players[this.game.turnOrder[i]];
 				objectToSend.players.push(player.name);
 				if (this.id == player.id) {
 					objectToSend.playerDice.push(player.dice);
 					objectToSend.youAre = i;
-				}
-				else if(this.game.state != "round"){
+				} else if (this.game.state != "round") {
 					objectToSend.playerDice.push(player.dice);
-				}
-				else {
-					objectToSend.playerDice.push(player.dice.map(number => number * 0));
+				} else {
+					objectToSend.playerDice.push(
+						player.dice.map((number) => number * 0)
+					);
 				}
 			}
 		}
 
 		if (this.game.state == "over") {
-			objectToSend.winner = this.game.players[this.game.turnOrder[(this.game.turnPlayer + 1) % 2]].name;
+			objectToSend.winner =
+				this.game.players[
+					this.game.turnOrder[(this.game.turnPlayer + 1) % 2]
+				].name;
 		}
 
 		this.socket.emit("message", objectToSend);
@@ -86,13 +88,13 @@ class Game {
 		this.turnPlayer = 0;
 	}
 
-	restart(){
+	restart() {
 		this.state = "starting";
 		this.turnOrder = this.turnOrder.concat(this.spectators);
 		this.spectators = [];
 		this.bid = {};
 		this.turnPlayer = 0;
-		
+
 		for (let i = 0; i < this.turnOrder.length; i++) {
 			this.players[this.turnOrder[i]].ready = false;
 		}
@@ -104,6 +106,30 @@ class Game {
 			let player = new Player(socket, this);
 			this.players[socket.id] = player;
 			this.turnOrder.push(socket.id);
+		} else {
+			let player = new Player(socket, this, spectator = true);
+			this.players[socket.id] = player;
+			this.spectators.push(socket.id);
+		}
+	}
+
+	removePlayer(socket) {
+		delete this.players[socket.id];
+
+		let loc = this.turnOrder.indexOf(socket.id);
+		if (loc > -1) {
+			this.turnOrder.splice(loc, 1);
+		}
+
+		loc = this.spectators.indexOf(socket.id);
+		if (loc > -1) {
+			this.spectators.splice(loc, 1);
+		}
+
+		if (this.state == "readying" || this.state == "round") {//if someone leaves mid-game, scrap the game
+			this.restart();
+		} else {
+			this.startIfReady();
 		}
 	}
 
@@ -112,7 +138,7 @@ class Game {
 			return;
 		}
 		this.players[id].ready = true;
-		this.players[id].name = name.substring(0, 32);
+		this.players[id].name = name;
 		this.startIfReady();
 	}
 
@@ -124,15 +150,18 @@ class Game {
 		}
 
 		if (this.state == "starting") {
+			if(this.turnOrder.length < 2){
+				return false;
+			}
 			shuffle(this.turnOrder);
-		}
-		else if(this.state == "over") {
+		} else if (this.state == "over") {
 			this.restart();
 			return true;
-		}
-		else {
+		} else {
 			if (this.players[this.turnOrder[this.turnPlayer]].diceCount == 0) {
-				this.spectators.push(this.turnOrder.splice(this.turnPlayer, 1)[0]);//todo: test this line
+				this.spectators.push(
+					this.turnOrder.splice(this.turnPlayer, 1)[0]
+				);
 				this.turnPlayer == this.turnPlayer % this.turnOrder.length;
 			}
 		}
@@ -142,7 +171,14 @@ class Game {
 			this.players[this.turnOrder[i]].rollDice();
 			this.players[this.turnOrder[i]].ready = false;
 		}
-		this.bid = { bidder: -1, bidderName: "", amount: 0, pips: 0, challenger: -1, challengerName: "" };
+		this.bid = {
+			bidder: -1,
+			bidderName: "",
+			amount: 0,
+			pips: 0,
+			challenger: -1,
+			challengerName: "",
+		};
 		this.sendGameState(true);
 		return true;
 	}
@@ -154,7 +190,8 @@ class Game {
 		}
 		if (action == "challenge" && this.bid["bidder"] > -1) {
 			this.bid["challenger"] = this.turnPlayer;
-			this.bid["challengerName"] = this.players[this.turnOrder[this.turnPlayer]].name;
+			this.bid["challengerName"] =
+				this.players[this.turnOrder[this.turnPlayer]].name;
 			this.challenge();
 		} else if (
 			action == "challenge" ||
@@ -170,7 +207,8 @@ class Game {
 			this.bid["amount"] = action[0];
 			this.bid["pips"] = action[1];
 			this.bid["bidder"] = this.turnPlayer;
-			this.bid["bidderName"] = this.players[this.turnOrder[this.turnPlayer]].name;
+			this.bid["bidderName"] =
+				this.players[this.turnOrder[this.turnPlayer]].name;
 			this.turnPlayer = (this.turnPlayer + 1) % this.turnOrder.length;
 		}
 		this.sendGameState(this.bid["challenger"] > -1);
@@ -190,7 +228,10 @@ class Game {
 		//if on 0, player will be removed from turn order on next successful call of startIfReady()
 
 		this.state = "readying";
-		if (this.turnOrder.length == 2 && this.players[this.turnOrder[this.turnPlayer]].diceCount == 0) {
+		if (
+			this.turnOrder.length == 2 &&
+			this.players[this.turnOrder[this.turnPlayer]].diceCount == 0
+		) {
 			this.state = "over";
 		}
 	}

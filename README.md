@@ -3,13 +3,9 @@ https://en.wikipedia.org/wiki/Liar%27s_dice
 ## Roadmap
 
 ### Must haves
-
-    Let players leave during starting phase
-
+    
     Let players reconnect(requires using something other than socket.id, this may not be possible)
-    
-    Handle multiple games
-    
+
     UI review
     
 ### DevOps

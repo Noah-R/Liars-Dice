@@ -36,7 +36,8 @@ function Selector(props) {
 
 function App() {
 	const [isConnected, setIsConnected] = useState(socket.connected);
-	let [gameState, setGameState] = useState("starting");
+	let [room, setRoom] = useState("");
+	let [gameState, setGameState] = useState("lobby");
 	let [bid, setBid] = useState([]);
 	let [amount, setAmount] = useState(0);
 	let [pips, setPips] = useState(0);
@@ -121,8 +122,21 @@ function App() {
 		socket.emit("move", "challenge");
 	};
 
+	let join = () => {
+		socket.emit("join", room);
+	};
+
+	let leave = () => {
+		socket.emit("leave", "");
+		setGameState("lobby");
+	};
+
 	let ready = () => {
 		socket.emit("ready", name);
+	};
+
+	const handleRoomChange = (event) => {
+		setRoom(event.target.value);
 	};
 
 	const handleNameChange = (event) => {
@@ -157,14 +171,29 @@ function App() {
 		<div class="center">{bid}</div>,
 	];
 
+	let lobbyScreen = [
+		<div class="middle">
+			<input
+				value={room}
+				onChange={handleRoomChange}
+				placeholder="Enter Name"
+				maxlength="32"
+			></input>
+			<button onClick={join}>Join</button>
+		</div>,
+	];
+
+
 	let startingScreen = [
 		<div class="middle">
 			<input
 				value={name}
 				onChange={handleNameChange}
 				placeholder="Enter Name"
+				maxlength="32"
 			></input>
 			<button onClick={ready}>Ready</button>
+			<button onClick={leave}>Leave</button>
 		</div>,
 	];
 
@@ -222,6 +251,7 @@ function App() {
 
 	return (
 		<div>
+			{gameState == "lobby" && <div>{lobbyScreen}</div>}
 			{gameState == "round" && <div>{roundScreen}</div>}
 			{gameState == "starting" && <div>{startingScreen}</div>}
 			{gameState == "readying" && <div>{readyingScreen}</div>}
