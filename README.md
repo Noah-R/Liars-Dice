@@ -12,6 +12,8 @@ https://en.wikipedia.org/wiki/Liar%27s_dice
     
     Handle multiple games
     
+    UI review
+    
 ### DevOps
 
     Document functions
@@ -35,3 +37,5 @@ https://en.wikipedia.org/wiki/Liar%27s_dice
     Bid validity checking on ui
     
     Waiting for ... after readying
+
+    Corruption-proof server functions from arbitrary packets
