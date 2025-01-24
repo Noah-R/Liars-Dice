@@ -10,9 +10,13 @@ function Player(props) {
 	for (let i = 0; i < props.dice.length; i++) {
 		dice += diceFaces[props.dice[i]];
 	}
+	let diceText = "center";
+	if(props.dice[0] != "0"){
+		diceText = "center big";
+	}
 	return (
 		<div class="player horizontal">
-			<p class="center big">{dice}</p>
+			<p class={diceText}>{dice}</p>
 			<h3 class="center">
 				{props.name}
 				{props.isTurnPlayer && <i> to play</i>}
@@ -26,9 +30,9 @@ function Selector(props) {
 		<div class="horizontal">
 			<button class="translucent" onClick={props.up}>🔼</button>
 			{props.value < props.display.length && (
-				<p class="big">{props.display[props.value]}</p>
+				<p>{props.display[props.value]}</p>
 			)}
-			{props.value >= props.display.length && <p class="big">{props.value}</p>}
+			{props.value >= props.display.length && <p>{props.value}</p>}
 			<button class="translucent"  onClick={props.down}>🔽</button>
 		</div>
 	);
