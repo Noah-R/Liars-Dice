@@ -99,7 +99,7 @@ class Game {
 			this.players[this.turnOrder[i]].diceCount = 5;
 			this.players[this.turnOrder[i]].ready = false;
 		}
-		this.sendGameState();
+		this.sendGameState(true);
 	}
 
 	addPlayer(socket) {
