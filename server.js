@@ -11,8 +11,8 @@ const io = new Server(httpServer, {
 	//options go here
 });
 
-let games = {}//room name: game object
-let players = {}//#socket.id: room name
+let games = {}//game name: game object
+let players = {}//#socket.id: game name
 
 io.on("connection", (socket) => {
 	console.log(socket.id + " connected");
@@ -25,21 +25,12 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("join", (data) => {
-		room = data.substring(0, 32)
-		if(!(room in games)){
-			games[room] = new game.Game();
+		gameName = data.substring(0, 32)
+		if(!(gameName in games)){
+			games[gameName] = new game.Game();
 		}
-		games[room].addPlayer(socket);
-		games[room].players[socket.id].sendGameState(true);
-		players[socket.id] = room;
-	});
-
-	socket.on("leave", (data) => {
-		games[players[socket.id]].removePlayer(socket);
-		if(games[players[socket.id]].players.length == 0){		
-			delete games[players[socket.id]];
-		}
-		players[socket.id] = "";
+		games[gameName].addPlayer(socket);
+		players[socket.id] = gameName;
 	});
 
 	socket.on("ready", (data) => {
@@ -48,6 +39,24 @@ io.on("connection", (socket) => {
 
 	socket.on("move", (data) => {
 		games[players[socket.id]].takeTurn(socket.id, data);
+	});
+
+	let nixPlayer = () => {
+		if(games[players[socket.id]]){
+			games[players[socket.id]].removePlayer(socket);
+			if(games[players[socket.id]].players.length == 0){		
+				delete games[players[socket.id]];
+			}
+		}
+		players[socket.id] = "";
+	}
+
+	socket.on("leave", (data) => {
+		nixPlayer();
+	});
+
+	socket.on("disconnect", (reason) => {
+		nixPlayer();
 	});
 });
 

@@ -14,7 +14,7 @@ class Player {
 		this.socket = socket;
 		this.game = game;
 		this.id = socket.id;
-		this.name = "";
+		this.name = "unnamed";
 		this.diceCount = 5;
 		if (spectator) {
 			this.diceCount = 0;
@@ -106,10 +106,12 @@ class Game {
 			let player = new Player(socket, this);
 			this.players[socket.id] = player;
 			this.turnOrder.push(socket.id);
+			this.sendGameState(true);
 		} else {
 			let player = new Player(socket, this, spectator = true);
 			this.players[socket.id] = player;
 			this.spectators.push(socket.id);
+			this.sendGameState(true);
 		}
 	}
 
@@ -145,6 +147,7 @@ class Game {
 	startIfReady() {
 		for (let i = 0; i < this.turnOrder.length; i++) {
 			if (this.players[this.turnOrder[i]].ready == false) {
+				this.sendGameState(true);
 				return false;
 			}
 		}

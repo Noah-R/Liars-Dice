@@ -3,8 +3,6 @@ https://en.wikipedia.org/wiki/Liar%27s_dice
 ## Roadmap
 
 ### Must haves
-    
-    Let players reconnect(use rooms)
 
     UI review
     

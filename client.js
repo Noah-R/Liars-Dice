@@ -199,6 +199,7 @@ function App() {
 			></input>
 			<button onClick={ready}>Ready</button>
 			<button onClick={leave}>Leave</button>
+			<ul>Players: {players.map((player) => <li>{player}</li>)}</ul>
 		</div>,
 	];
 
