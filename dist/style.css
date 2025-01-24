@@ -19,8 +19,8 @@ button{
 .inputBar{
     position: fixed;
     top: 40%;
-    left: 40%;
-    width: 20%;
+    left: 35%;
+    width: 30%;
 }
 
 .middle{
@@ -42,8 +42,15 @@ button{
     font-size: 48px;
 }
 
-.translucent {
+.selectorButton {
     padding: 0;
     border: none;
     background: none;
+    font-size: 36px;
+}
+
+.selectorLabel {
+    margin: 5px;
+    font-size: 36px;
+    line-height: 36px;
 }

@@ -243,7 +243,7 @@ class Game {
 
 	sendGameState(sendPlayers) {
 		for (var key of Object.keys(this.players)) {
-			this.players[key].sendGameState(sendPlayers, this);
+			this.players[key].sendGameState(sendPlayers);
 		}
 	}
 }

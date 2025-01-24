@@ -11,7 +11,7 @@ function Player(props) {
 		dice += diceFaces[props.dice[i]];
 	}
 	let diceText = "center";
-	if(props.dice[0] != "0"){
+	if (props.dice[0] != "0") {
 		diceText = "center big";
 	}
 	return (
@@ -28,12 +28,24 @@ function Player(props) {
 function Selector(props) {
 	return (
 		<div class="horizontal">
-			<button class="translucent" onClick={props.up}>🔼</button>
+			<button
+				class="selectorButton"
+				onClick={props.up}
+			>
+				🔼
+			</button>
 			{props.value < props.display.length && (
-				<p>{props.display[props.value]}</p>
+				<p class="selectorLabel">{props.display[props.value]}</p>
 			)}
-			{props.value >= props.display.length && <p>{props.value}</p>}
-			<button class="translucent"  onClick={props.down}>🔽</button>
+			{props.value >= props.display.length && (
+				<p class="selectorLabel">{props.value}</p>
+			)}
+			<button
+				class="selectorButton"
+				onClick={props.down}
+			>
+				🔽
+			</button>
 		</div>
 	);
 }
@@ -164,7 +176,7 @@ function App() {
 	}
 
 	let selfAndBid = [
-		<div class="center horizontal">
+		<div>
 			{youAre > -1 && (
 				<Player
 					dice={playerDice[youAre]}
@@ -173,13 +185,14 @@ function App() {
 				/>
 			)}
 			{youAre == -1 && <p>You are spectating</p>}
+			<div class="center">{bid}</div>
 		</div>,
-		<div class="center">{bid}</div>,
 	];
 
 	let lobbyScreen = [
 		<div class="middle">
 			<input
+				autofocus="autofocus"
 				value={room}
 				onChange={handleRoomChange}
 				placeholder="Enter Room Code"
@@ -199,7 +212,12 @@ function App() {
 			></input>
 			<button onClick={ready}>Ready</button>
 			<button onClick={leave}>Leave</button>
-			<ul>Players: {players.map((player) => <li>{player}</li>)}</ul>
+			<ul>
+				Players:{" "}
+				{players.map((player) => (
+					<li>{player}</li>
+				))}
+			</ul>
 		</div>,
 	];
 

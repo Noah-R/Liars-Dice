@@ -4,8 +4,12 @@ https://en.wikipedia.org/wiki/Liar%27s_dice
 
 ### Must haves
 
+    Reposition bid/challenge buttons
+
+    If the game restarts because a player leaves mid-game, they still appear in the player list on other clients
+
     UI review
-    
+
 ### DevOps
 
     Document functions
@@ -27,7 +31,7 @@ https://en.wikipedia.org/wiki/Liar%27s_dice
     Grey out inactive options
 
     Bid validity checking on ui
-    
+
     Waiting for ... after readying
 
     Corruption-proof server functions from arbitrary packets
