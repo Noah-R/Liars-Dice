@@ -96,6 +96,7 @@ class Game {
 		this.turnPlayer = 0;
 
 		for (let i = 0; i < this.turnOrder.length; i++) {
+			this.players[this.turnOrder[i]].diceCount = 5;
 			this.players[this.turnOrder[i]].ready = false;
 		}
 		this.sendGameState();
@@ -154,6 +155,7 @@ class Game {
 
 		if (this.state == "starting") {
 			if(this.turnOrder.length < 2){
+				this.sendGameState(true);
 				return false;
 			}
 			shuffle(this.turnOrder);
