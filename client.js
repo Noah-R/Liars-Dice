@@ -225,29 +225,32 @@ function App() {
 		<div class="center">{opponentOutput}</div>,
 		<div class="inputBar center">
 			{selfAndBid}
-			<Selector
-				up={() => {
-					setAmount(Math.min(amount + 1, 256));
-				}}
-				down={() => {
-					setAmount(Math.max(amount - 1, 1));
-				}}
-				value={amount}
-				display={[]}
-			/>
-			<Selector
-				up={() => {
-					setPips(Math.min(pips + 1, 6));
-				}}
-				down={() => {
-					setPips(Math.max(pips - 1, 1));
-				}}
-				value={pips}
-				display={diceFaces}
-			/>
-			<div class="horizontal">
-				<button onClick={move}>Bid</button>
-				<button onClick={challenge}>Challenge</button>
+			<div>
+				<Selector
+					up={() => {
+						setAmount(Math.min(amount + 1, 256));
+					}}
+					down={() => {
+						setAmount(Math.max(amount - 1, 1));
+					}}
+					value={amount}
+					display={[]}
+				/>
+				<Selector
+					up={() => {
+						setPips(Math.min(pips + 1, 6));
+					}}
+					down={() => {
+						setPips(Math.max(pips - 1, 1));
+					}}
+					value={pips}
+					display={diceFaces}
+				/>
+				<div class="horizontal">
+					<button  class="selectorLabel" onClick={move}>Bid</button>
+					<p class="selectorLabel">‎</p>
+					<button  class="selectorLabel" onClick={challenge}>Challenge</button>
+				</div>
 			</div>
 		</div>,
 	];

@@ -34,22 +34,22 @@ button{
     display: inline-block;
 }
 
-.center {
+.center{
     text-align: center;
 }
 
-.big {
+.big{
     font-size: 48px;
 }
 
-.selectorButton {
+.selectorButton{
     padding: 0;
     border: none;
     background: none;
     font-size: 36px;
 }
 
-.selectorLabel {
+.selectorLabel{
     margin: 5px;
     font-size: 36px;
     line-height: 36px;

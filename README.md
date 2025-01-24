@@ -4,8 +4,6 @@ https://en.wikipedia.org/wiki/Liar%27s_dice
 
 ### Must haves
 
-    Reposition bid/challenge buttons
-
     UI review
 
 ### DevOps
