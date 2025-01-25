@@ -190,6 +190,7 @@ function App() {
 	];
 
 	let lobbyScreen = [
+		<h1 class="big">Liar's Dice</h1>,
 		<div class="middle">
 			<input
 				autofocus="autofocus"
@@ -203,6 +204,7 @@ function App() {
 	];
 
 	let startingScreen = [
+		<h1 class="big">Liar's Dice</h1>,
 		<div class="middle">
 			<input
 				value={name}
