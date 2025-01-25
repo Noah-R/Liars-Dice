@@ -1,4 +1,4 @@
 node_modules/*
-dist/*
-!dist/index.html
-!dist/style.css
+dist/index.js
+dist/index.js.LICENSE.txt
+dist/favicon.ico
