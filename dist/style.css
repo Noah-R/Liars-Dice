@@ -54,3 +54,9 @@ button{
     font-size: 36px;
     line-height: 36px;
 }
+
+.topright{
+    position: fixed;
+    top: 1%;
+    left: 95%;
+}
