@@ -104,16 +104,13 @@ class Game {
 
 	addPlayer(socket) {
 		if (this.state == "starting") {
-			let player = new Player(socket, this);
-			this.players[socket.id] = player;
+			this.players[socket.id] = new Player(socket, this);
 			this.turnOrder.push(socket.id);
-			this.sendGameState(true);
 		} else {
-			let player = new Player(socket, this, spectator = true);
-			this.players[socket.id] = player;
+			this.players[socket.id] = new Player(socket, this, spectator = true);
 			this.spectators.push(socket.id);
-			this.sendGameState(true);
 		}
+		this.sendGameState(true);
 	}
 
 	removePlayer(socket) {
@@ -163,7 +160,7 @@ class Game {
 			this.restart();
 			return true;
 		} else {
-			if (this.players[this.turnOrder[this.turnPlayer]].diceCount == 0) {
+			if (this.players[this.turnOrder[this.turnPlayer]].diceCount == 0) {//eliminated players get removed here
 				this.spectators.push(
 					this.turnOrder.splice(this.turnPlayer, 1)[0]
 				);
