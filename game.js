@@ -26,7 +26,7 @@ class Player {
 	count(value) {
 		let amount = 0;
 		for (let i = 0; i < this.dice.length; i++) {
-			if (this.dice[i] == value) {
+			if (this.dice[i] == value || this.dice[i] == 1) {
 				amount += 1;
 			}
 		}
