@@ -107,7 +107,7 @@ class Game {
 			this.players[socket.id] = new Player(socket, this);
 			this.turnOrder.push(socket.id);
 		} else {
-			this.players[socket.id] = new Player(socket, this, spectator = true);
+			this.players[socket.id] = new Player(socket, this, true);
 			this.spectators.push(socket.id);
 		}
 		this.sendGameState(true);
