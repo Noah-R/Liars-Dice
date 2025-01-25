@@ -10,9 +10,9 @@ function Player(props) {
 	for (let i = 0; i < props.dice.length; i++) {
 		dice += diceFaces[props.dice[i]];
 	}
-	let diceText = "center";
+	let diceText = "center slim";
 	if (props.dice[0] != "0") {
-		diceText = "center big";
+		diceText = "center slim big";
 	}
 	return (
 		<div class="player horizontal">
@@ -185,7 +185,7 @@ function App() {
 				/>
 			)}
 			{youAre == -1 && <p>You are spectating</p>}
-			<div class="center">{bid}</div>
+			<div class="center big">{bid}</div>
 		</div>,
 	];
 
