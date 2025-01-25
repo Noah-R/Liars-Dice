@@ -25,7 +25,7 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("join", (data) => {
-		gameName = data.substring(0, 32)
+		let gameName = data.substring(0, 32)
 		if(!(gameName in games)){
 			games[gameName] = new game.Game();
 		}
