@@ -27,6 +27,7 @@
     "webpack-dev-server": "^5.2.0"
   },
     "engines": {
-      "node": ">=v16"
+      "node": ">=v16",
+      "_comment": "Deployment through Glitch only supports up to Node v16"
     }
 }
