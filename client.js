@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:3000");
+const socket = io();
 const diceFaces = ["🎲", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 
 function Player(props) {

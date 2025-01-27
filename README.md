@@ -1,20 +1,6 @@
 ## Roadmap
 
-### Must haves
-
-    UI review
-
-### DevOps
-
-    Document functions
-
-    Testing
-
-    Deployment
-
-### Nice to haves
-
-    CSS
+    CSS/UI review
 
     Build out starting screen
 
@@ -29,3 +15,7 @@
     Waiting for ... after readying
 
     Corruption-proof server functions from arbitrary packets
+
+    Document functions
+
+    Testing
