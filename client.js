@@ -281,7 +281,7 @@ function App() {
 
 	return (
 		<div>
-			<a class="topright" href="rules.html">Rules</a>
+			<a class="topright" href="rules.html" target="_blank">Rules</a>
 			{gameState == "lobby" && <div>{lobbyScreen}</div>}
 			{gameState == "round" && <div>{roundScreen}</div>}
 			{gameState == "starting" && <div>{startingScreen}</div>}
