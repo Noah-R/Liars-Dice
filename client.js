@@ -63,6 +63,7 @@ function App() {
 	let [youAre, setYouAre] = useState(0);
 	let [winner, setWinner] = useState("");
 	let [name, setName] = useState("");
+	let [canReady, setCanReady] = useState(false);
 
 	useEffect(() => {
 		function onConnect() {
@@ -106,6 +107,7 @@ function App() {
 					setBid("No bid yet");
 					setAmount(1);
 					setPips(1);
+					setCanReady(true);
 				}
 			}
 			if ("playerDice" in data) {
@@ -149,6 +151,7 @@ function App() {
 
 	let ready = () => {
 		socket.emit("ready", name);
+		setCanReady(false);
 	};
 
 	const handleRoomChange = (event) => {
@@ -262,8 +265,10 @@ function App() {
 		<button
 			class="middle"
 			onClick={ready}
+			disabled = {!canReady}
 		>
-			Ready
+			{canReady && "Ready!"}
+			{!canReady && "Waiting..."}
 		</button>,
 		<div class="inputBar center">{selfAndBid}</div>,
 	];

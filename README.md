@@ -16,6 +16,8 @@
 
     Corruption-proof server functions from arbitrary packets
 
+    Player name validation(0 length, duplicates)
+
     Document functions
 
     Testing
