@@ -54,7 +54,8 @@ function App() {
 	const [isConnected, setIsConnected] = useState(socket.connected);
 	let [room, setRoom] = useState("");
 	let [gameState, setGameState] = useState("lobby");
-	let [bid, setBid] = useState([]);
+	let [bid, setBid] = useState("");
+	let [bidValues, setBidValues] = useState([]);
 	let [amount, setAmount] = useState(0);
 	let [pips, setPips] = useState(0);
 	let [turnPlayer, setTurnPlayer] = useState(0);
@@ -103,10 +104,12 @@ function App() {
 					setBid(b);
 					setAmount(data.bid.amount);
 					setPips(data.bid.pips);
+					setBidValues([data.bid.amount, data.bid.pips])
 				} else {
 					setBid("No bid yet");
 					setAmount(1);
 					setPips(1);
+					setBidValues([0, 0])
 					setCanReady(true);
 				}
 			}
@@ -236,7 +239,7 @@ function App() {
 						setAmount(Math.min(amount + 1, 256));
 					}}
 					down={() => {
-						setAmount(Math.max(amount - 1, 1));
+						setAmount(Math.max(amount - 1, Math.max(bidValues[0], 1)));
 					}}
 					value={amount}
 					display={[]}
@@ -246,15 +249,27 @@ function App() {
 						setPips(Math.min(pips + 1, 6));
 					}}
 					down={() => {
-						setPips(Math.max(pips - 1, 1));
+						setPips(Math.max(pips - 1, Math.max(bidValues[1], 1)));
 					}}
 					value={pips}
 					display={diceFaces}
 				/>
 				<div class="horizontal">
-					<button  class="selectorLabel" onClick={move}>Bid</button>
+					<button
+						class="selectorLabel"
+						onClick={move}
+						disabled={youAre != turnPlayer || (amount == bidValues[0] && pips == bidValues[1])}
+					>
+						Bid
+					</button>
 					<p class="selectorLabel">‎</p>
-					<button  class="selectorLabel" onClick={challenge}>Challenge</button>
+					<button
+						class="selectorLabel"
+						onClick={challenge}
+						disabled={youAre != turnPlayer || bid == "No bid yet"}
+					>
+						Challenge
+					</button>
 				</div>
 			</div>
 		</div>,
@@ -265,7 +280,7 @@ function App() {
 		<button
 			class="middle"
 			onClick={ready}
-			disabled = {!canReady}
+			disabled={!canReady}
 		>
 			{canReady && "Ready!"}
 			{!canReady && "Waiting..."}
@@ -278,6 +293,7 @@ function App() {
 		<button
 			class="middle"
 			onClick={ready}
+			disabled={!canReady}
 		>
 			{winner} wins!
 		</button>,
@@ -286,7 +302,13 @@ function App() {
 
 	return (
 		<div>
-			<a class="topright" href="rules.html" target="_blank">Rules</a>
+			<a
+				class="topright"
+				href="rules.html"
+				target="_blank"
+			>
+				Rules
+			</a>
 			{gameState == "lobby" && <div>{lobbyScreen}</div>}
 			{gameState == "round" && <div>{roundScreen}</div>}
 			{gameState == "starting" && <div>{startingScreen}</div>}
