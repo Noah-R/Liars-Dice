@@ -196,7 +196,10 @@ class Game {
 				this.players[this.turnOrder[this.turnPlayer]].name;
 			this.challenge();
 		} else if (
-			action == "challenge" ||
+			typeof action != "object" ||
+			action.length != 2 ||
+			typeof action[0] != "number" ||
+			typeof action[1] != "number" ||
 			action[0] < 1 ||
 			action[1] < 1 ||
 			action[1] > 6 ||
