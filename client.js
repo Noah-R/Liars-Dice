@@ -156,6 +156,10 @@ function App() {
 		setGameState("lobby");
 	};
 
+	let spectate = () => {
+		socket.emit("spectate", name);
+	};
+
 	let ready = () => {
 		socket.emit("ready", name);
 		setCanReady(false);
@@ -239,6 +243,12 @@ function App() {
 			>
 				Ready
 			</button>
+			<button
+				onClick={spectate}
+				disabled={name == ""}
+			>
+				Spectate
+			</button>
 			<button onClick={leave}>Leave</button>
 			<ul>
 				Players:{" "}
@@ -304,27 +314,35 @@ function App() {
 
 	let readyingScreen = [
 		<div class="center">{opponentOutput}</div>,
-		<button
-			class="middle"
-			onClick={ready}
-			disabled={!canReady}
-		>
-			{canReady && "Ready!"}
-			{!canReady && "Waiting..."}
-		</button>,
+		<div>
+			{youAre > -1 && (
+				<button
+					class="middle"
+					onClick={ready}
+					disabled={!canReady}
+				>
+					{canReady && "Ready!"}
+					{!canReady && "Waiting..."}
+				</button>
+			)}
+		</div>,
 		<div class="inputBar center">{selfAndBid}</div>,
 		spectatorList,
 	];
 
 	let overScreen = [
 		<div class="center">{opponentOutput}</div>,
-		<button
-			class="middle"
-			onClick={ready}
-			disabled={!canReady}
-		>
-			{winner} wins!
-		</button>,
+		<div>
+			{
+				<button
+					class="middle"
+					onClick={ready}
+					disabled={!canReady || youAre == -1}
+				>
+					{winner} wins!
+				</button>
+			}
+		</div>,
 		<div class="inputBar center">{selfAndBid}</div>,
 		spectatorList,
 	];

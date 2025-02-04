@@ -10,11 +10,11 @@ const shuffle = function (array) {
 };
 
 class Player {
-	constructor(socket, game, spectator = false) {
+	constructor(socket, game, name, spectator = false) {
 		this.socket = socket;
 		this.game = game;
 		this.id = socket.id;
-		this.name = "";
+		this.name = name;
 		this.diceCount = 5;
 		if (spectator) {
 			this.diceCount = 0;
@@ -111,46 +111,81 @@ class Game {
 		this.sendSpectators();
 	}
 
-	addPlayer(socket) {
-		if (this.state == "starting") {
-			this.players[socket.id] = new Player(socket, this);
+	addPlayer(socket, spectator = false, name = "") {
+		if (this.state == "starting" && !spectator) {
+			this.players[socket.id] = new Player(socket, this, name);
 			this.turnOrder.push(socket.id);
 		} else {
-			this.players[socket.id] = new Player(socket, this, true);
+			this.players[socket.id] = new Player(socket, this, name, true);
 			this.spectators.push(socket.id);
 		}
 		this.sendGameState(true);
 		this.sendSpectators();
 	}
 
-	removePlayer(socket) {
-		delete this.players[socket.id];
+	removePlayer(id) {
+		delete this.players[id];
 
-		let loc = this.turnOrder.indexOf(socket.id);
+		let loc = this.turnOrder.indexOf(id);
 		if (loc > -1) {
 			this.turnOrder.splice(loc, 1);
+			
+			if (this.state == "readying" || this.state == "round") {
+				//if someone leaves mid-game, scrap the game
+				this.restart();
+			} else {
+				this.startIfReady();
+			}
 		}
 
-		loc = this.spectators.indexOf(socket.id);
+		loc = this.spectators.indexOf(id);
 		if (loc > -1) {
 			this.spectators.splice(loc, 1);
 			this.sendSpectators();
 		}
-
-		if (this.state == "readying" || this.state == "round") {
-			//if someone leaves mid-game, scrap the game
-			this.restart();
-		} else {
-			this.startIfReady();
-		}
 	}
 
-	ready(id, name) {
-		if (!this.state == "round" || name == "") {
+	makePlayer(id){
+		if(this.state != "starting" || this.players[id].diceCount > 0){
+			return false;
+		}
+		this.players[id].diceCount = 5;
+		
+		let loc = this.spectators.indexOf(id);
+		if (loc > -1) {
+			this.spectators.splice(loc, 1);
+		}
+		this.turnOrder.push(id)
+
+		this.sendSpectators();
+	}
+
+	makeSpectator(id){
+		if(this.state != "starting" || this.players[id].diceCount == 0){
+			return false;
+		}
+		this.players[id].diceCount = 0;
+		
+		let loc = this.turnOrder.indexOf(id);
+		if (loc > -1) {
+			this.turnOrder.splice(loc, 1);
+		}
+		this.spectators.push(id)
+
+		this.sendSpectators();
+		this.startIfReady();
+		
+	}
+
+	setName(id, name){
+		this.players[id].name = name;
+	}
+
+	ready(id) {
+		if (!this.state == "round" || this.players[id].name == "") {
 			return;
 		}
 		this.players[id].ready = true;
-		this.players[id].name = name;
 		this.startIfReady();
 	}
 

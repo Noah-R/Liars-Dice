@@ -25,25 +25,38 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("join", (data) => {
-		let gameName = data.substring(0, 32)
+		let gameName = "#"+data.substring(0, 32)
 		if(!(gameName in games)){
 			games[gameName] = new game.Game();
 		}
-		games[gameName].addPlayer(socket);
+		games[gameName].addPlayer(socket, "");
 		players[socket.id] = gameName;
 	});
 
 	socket.on("ready", (data) => {
-		games[players[socket.id]].ready(socket.id, data.substring(0, 32));
+		if(games[players[socket.id]]){
+			games[players[socket.id]].makePlayer(socket.id);
+			games[players[socket.id]].setName(socket.id, data.substring(0, 32));
+			games[players[socket.id]].ready(socket.id);
+		}
+	});
+
+	socket.on("spectate", (data) => {
+		if(games[players[socket.id]]){
+			games[players[socket.id]].setName(socket.id, data.substring(0, 32));
+			games[players[socket.id]].makeSpectator(socket.id);
+		}
 	});
 
 	socket.on("move", (data) => {
-		games[players[socket.id]].takeTurn(socket.id, data);
+		if(games[players[socket.id]]){
+			games[players[socket.id]].takeTurn(socket.id, data);
+		}
 	});
 
 	let nixPlayer = () => {
 		if(games[players[socket.id]]){
-			games[players[socket.id]].removePlayer(socket);
+			games[players[socket.id]].removePlayer(socket.id);
 			if(games[players[socket.id]].players.length == 0){		
 				delete games[players[socket.id]];
 			}
