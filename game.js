@@ -14,7 +14,7 @@ class Player {
 		this.socket = socket;
 		this.game = game;
 		this.id = socket.id;
-		this.name = "unnamed";
+		this.name = "";
 		this.diceCount = 5;
 		if (spectator) {
 			this.diceCount = 0;
@@ -134,7 +134,7 @@ class Game {
 	}
 
 	ready(id, name) {
-		if (!this.state == "round") {
+		if (!this.state == "round" || name == "") {
 			return;
 		}
 		this.players[id].ready = true;

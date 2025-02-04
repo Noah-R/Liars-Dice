@@ -218,7 +218,7 @@ function App() {
 				placeholder="Enter Your Name"
 				maxlength="32"
 			></input>
-			<button onClick={ready}>Ready</button>
+			<button onClick={ready} disabled={name == ""}>Ready</button>
 			<button onClick={leave}>Leave</button>
 			<ul>
 				Players:{" "}

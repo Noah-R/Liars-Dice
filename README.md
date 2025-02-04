@@ -6,7 +6,7 @@
 
     Let players spectate from start
 
-    Player name validation(0 length, duplicates)
+    Prevent duplicate names
 
     Document functions
 
