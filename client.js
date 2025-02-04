@@ -201,7 +201,7 @@ function App() {
 
 	let spectatorList = [
 		<div class="bottomright">
-			<h3>Spectators:</h3>
+			<h3>{spectators.length > 0 && "Spectators:"}</h3>
 			<ul>
 				{spectators.map((name) => (
 					<li>{name}</li>
