@@ -65,6 +65,7 @@ function App() {
 	let [winner, setWinner] = useState("");
 	let [name, setName] = useState("");
 	let [canReady, setCanReady] = useState(false);
+	let [spectators, setSpectators] = useState([]);
 
 	useEffect(() => {
 		function onConnect() {
@@ -104,12 +105,12 @@ function App() {
 					setBid(b);
 					setAmount(data.bid.amount);
 					setPips(data.bid.pips);
-					setBidValues([data.bid.amount, data.bid.pips])
+					setBidValues([data.bid.amount, data.bid.pips]);
 				} else {
 					setBid("No bid yet");
 					setAmount(1);
 					setPips(1);
-					setBidValues([0, 0])
+					setBidValues([0, 0]);
 					setCanReady(true);
 				}
 			}
@@ -121,6 +122,9 @@ function App() {
 			}
 			if ("winner" in data) {
 				setWinner(data.winner);
+			}
+			if ("spectators" in data) {
+				setSpectators(data.spectators);
 			}
 		}
 
@@ -195,6 +199,17 @@ function App() {
 		</div>,
 	];
 
+	let spectatorList = [
+		<div class="bottomright">
+			<h3>Spectators:</h3>
+			<ul>
+				{spectators.map((name) => (
+					<li>{name}</li>
+				))}
+			</ul>
+		</div>,
+	];
+
 	let lobbyScreen = [
 		<h1 class="big">Liar's Dice</h1>,
 		<div class="middle">
@@ -218,7 +233,12 @@ function App() {
 				placeholder="Enter Your Name"
 				maxlength="32"
 			></input>
-			<button onClick={ready} disabled={name == ""}>Ready</button>
+			<button
+				onClick={ready}
+				disabled={name == ""}
+			>
+				Ready
+			</button>
 			<button onClick={leave}>Leave</button>
 			<ul>
 				Players:{" "}
@@ -227,6 +247,7 @@ function App() {
 				))}
 			</ul>
 		</div>,
+		spectatorList,
 	];
 
 	let roundScreen = [
@@ -239,7 +260,9 @@ function App() {
 						setAmount(Math.min(amount + 1, 256));
 					}}
 					down={() => {
-						setAmount(Math.max(amount - 1, Math.max(bidValues[0], 1)));
+						setAmount(
+							Math.max(amount - 1, Math.max(bidValues[0], 1))
+						);
 					}}
 					value={amount}
 					display={[]}
@@ -258,7 +281,10 @@ function App() {
 					<button
 						class="selectorLabel"
 						onClick={move}
-						disabled={youAre != turnPlayer || (amount == bidValues[0] && pips == bidValues[1])}
+						disabled={
+							youAre != turnPlayer ||
+							(amount == bidValues[0] && pips == bidValues[1])
+						}
 					>
 						Bid
 					</button>
@@ -273,6 +299,7 @@ function App() {
 				</div>
 			</div>
 		</div>,
+		spectatorList,
 	];
 
 	let readyingScreen = [
@@ -286,6 +313,7 @@ function App() {
 			{!canReady && "Waiting..."}
 		</button>,
 		<div class="inputBar center">{selfAndBid}</div>,
+		spectatorList,
 	];
 
 	let overScreen = [
@@ -298,6 +326,7 @@ function App() {
 			{winner} wins!
 		</button>,
 		<div class="inputBar center">{selfAndBid}</div>,
+		spectatorList,
 	];
 
 	return (

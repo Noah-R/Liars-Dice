@@ -64,3 +64,9 @@ button{
     top: 1%;
     left: 95%;
 }
+
+.bottomright{
+    position: fixed;
+    top: 65%;
+    left: 90%;
+}

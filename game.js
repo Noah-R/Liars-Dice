@@ -76,6 +76,14 @@ class Player {
 
 		this.socket.emit("message", objectToSend);
 	}
+
+	sendSpectators() {
+		this.socket.emit("message", {
+			spectators: this.game.spectators.map(
+				(id) => this.game.players[id].name
+			),
+		});
+	}
 }
 
 class Game {
@@ -100,6 +108,7 @@ class Game {
 			this.players[this.turnOrder[i]].ready = false;
 		}
 		this.sendGameState(true);
+		this.sendSpectators();
 	}
 
 	addPlayer(socket) {
@@ -111,6 +120,7 @@ class Game {
 			this.spectators.push(socket.id);
 		}
 		this.sendGameState(true);
+		this.sendSpectators();
 	}
 
 	removePlayer(socket) {
@@ -124,9 +134,11 @@ class Game {
 		loc = this.spectators.indexOf(socket.id);
 		if (loc > -1) {
 			this.spectators.splice(loc, 1);
+			this.sendSpectators();
 		}
 
-		if (this.state == "readying" || this.state == "round") {//if someone leaves mid-game, scrap the game
+		if (this.state == "readying" || this.state == "round") {
+			//if someone leaves mid-game, scrap the game
 			this.restart();
 		} else {
 			this.startIfReady();
@@ -151,7 +163,7 @@ class Game {
 		}
 
 		if (this.state == "starting") {
-			if(this.turnOrder.length < 2){
+			if (this.turnOrder.length < 2) {
 				this.sendGameState(true);
 				return false;
 			}
@@ -160,11 +172,13 @@ class Game {
 			this.restart();
 			return true;
 		} else {
-			if (this.players[this.turnOrder[this.turnPlayer]].diceCount == 0) {//eliminated players get removed here
+			if (this.players[this.turnOrder[this.turnPlayer]].diceCount == 0) {
+				//eliminated players get removed here
 				this.spectators.push(
 					this.turnOrder.splice(this.turnPlayer, 1)[0]
 				);
 				this.turnPlayer == this.turnPlayer % this.turnOrder.length;
+				this.sendSpectators();
 			}
 		}
 
@@ -244,6 +258,12 @@ class Game {
 	sendGameState(sendPlayers) {
 		for (var key of Object.keys(this.players)) {
 			this.players[key].sendGameState(sendPlayers);
+		}
+	}
+
+	sendSpectators() {
+		for (var key of Object.keys(this.players)) {
+			this.players[key].sendSpectators();
 		}
 	}
 }
