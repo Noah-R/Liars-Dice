@@ -1,9 +1,3 @@
-## Roadmap
+# Liar's Dice
 
-    CSS/UI review
-
-    Prevent duplicate names
-
-    Document functions
-
-    Testing
+An online version of [Liar's Dice](https://en.wikipedia.org/wiki/Liar%27s_dice). Full stack written in JavaScript, using Express, Socket.io, and React.
