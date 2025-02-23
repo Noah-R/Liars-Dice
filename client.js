@@ -70,6 +70,7 @@ function App() {
 	let [turnPlayer, setTurnPlayer] = useState(0);
 	let [players, setPlayers] = useState([]);
 	let [playerDice, setPlayerDice] = useState([]);
+	let [totalDice, setTotalDice] = useState([]);
 	let [youAre, setYouAre] = useState(0);
 	let [winner, setWinner] = useState("");
 	let [name, setName] = useState("");
@@ -129,6 +130,11 @@ function App() {
 			}
 			if ("playerDice" in data) {
 				setPlayerDice(data.playerDice);
+				let count = 0;
+				for(let i = 0; i < data.playerDice.length; i++){
+					count +=  data.playerDice[i].length;
+				}
+				setTotalDice(count);
 			}
 			if ("youAre" in data) {
 				setYouAre(data.youAre);
@@ -300,7 +306,7 @@ function App() {
 			<div>
 				<Selector
 					up={() => {
-						setAmount(Math.min(amount + 1, 256));
+						setAmount(Math.min(amount + 1, totalDice));
 					}}
 					down={() => {
 						setAmount(
