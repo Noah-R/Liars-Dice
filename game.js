@@ -48,6 +48,7 @@ class Player {
 		}
 
 		if (sendPlayers) {
+			objectToSend.reverseTurnOrder = this.game.reverseTurnOrder;
 			objectToSend.players = [];
 			objectToSend.playerDice = [];
 			objectToSend.youAre = -1;

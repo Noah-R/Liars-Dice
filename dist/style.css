@@ -25,9 +25,15 @@ button{
 
 .middle{
     position: fixed;
-    top: 25%;
+    top: 20%;
     left: 40%;
     width: 20%;
+    height: 20%;
+}
+
+.inMiddle{
+    display: block;
+    margin: 0 auto;
 }
 
 .horizontal{

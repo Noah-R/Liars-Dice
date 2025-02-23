@@ -38,9 +38,7 @@ function Selector(props) {
 	return (
 		<div class="horizontal">
 			<button
-				class={
-					"selectorButton " + (!props.isTurnPlayer && "grayedOut")
-				}
+				class={"selectorButton " + (!props.isTurnPlayer && "grayedOut")}
 				onClick={props.isTurnPlayer && props.up}
 			>
 				🔼
@@ -52,9 +50,7 @@ function Selector(props) {
 				<p class="selectorLabel">{props.value}</p>
 			)}
 			<button
-				class={
-					"selectorButton " + (!props.isTurnPlayer && "grayedOut")
-				}
+				class={"selectorButton " + (!props.isTurnPlayer && "grayedOut")}
 				onClick={props.isTurnPlayer && props.down}
 			>
 				🔽
@@ -81,6 +77,7 @@ function App() {
 	let [canReady, setCanReady] = useState(false);
 	let [spectators, setSpectators] = useState([]);
 	let [gameLog, setGameLog] = useState([]);
+	let [reverseTurnOrder, setReverseTurnOrder] = useState(false);
 
 	useEffect(() => {
 		function onConnect() {
@@ -155,6 +152,9 @@ function App() {
 			}
 			if ("spectators" in data) {
 				setSpectators(data.spectators);
+			}
+			if ("reverseTurnOrder" in data) {
+				setReverseTurnOrder(data.reverseTurnOrder);
 			}
 		}
 
@@ -311,9 +311,12 @@ function App() {
 
 	let roundScreen = [
 		<div class="center">{opponentOutput}</div>,
-		<h1 class="middle big centerText">
-			{youAre == turnPlayer && "Your turn!"}
-		</h1>,
+		<div class="middle">
+			<h1 class="inMiddle big centerText">
+				{youAre == turnPlayer && "Your turn!"}
+				{reverseTurnOrder ? "🔄" : "🔁"}
+			</h1>
+		</div>,
 		<div class="inputBar center">
 			{selfAndBid}
 			<div>
@@ -377,14 +380,17 @@ function App() {
 		<div class="center">{opponentOutput}</div>,
 		<div>
 			{youAre > -1 && (
-				<button
-					class="middle"
-					onClick={ready}
-					disabled={!canReady}
-				>
-					{canReady && "Ready!"}
-					{!canReady && "Waiting..."}
-				</button>
+				<div class="middle">
+					<br />
+					<button
+						class="inMiddle"
+						onClick={ready}
+						disabled={!canReady}
+					>
+						{canReady && "Ready!"}
+						{!canReady && "Waiting..."}
+					</button>
+				</div>
 			)}
 		</div>,
 		<div class="inputBar center">{selfAndBid}</div>,
@@ -396,13 +402,16 @@ function App() {
 		<div class="center">{opponentOutput}</div>,
 		<div>
 			{
-				<button
-					class="middle"
-					onClick={ready}
-					disabled={!canReady || youAre == -1}
-				>
-					{winner} wins!
-				</button>
+				<div class="middle">
+					<br />
+					<button
+						class="inMiddle"
+						onClick={ready}
+						disabled={!canReady || youAre == -1}
+					>
+						{winner} wins!
+					</button>
+				</div>
 			}
 		</div>,
 		<div class="inputBar center">{selfAndBid}</div>,
