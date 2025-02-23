@@ -94,6 +94,7 @@ class Game {
 		this.spectators = [];
 		this.bid = {};
 		this.turnPlayer = 0;
+		this.reverseTurnOrder = false;
 	}
 
 	restart() {
@@ -102,6 +103,7 @@ class Game {
 		this.spectators = [];
 		this.bid = {};
 		this.turnPlayer = 0;
+		this.reverseTurnOrder = false;
 
 		for (let i = 0; i < this.turnOrder.length; i++) {
 			this.players[this.turnOrder[i]].diceCount = 5;
@@ -207,12 +209,19 @@ class Game {
 			this.restart();
 			return true;
 		} else {
+			this.reverseTurnOrder = !this.reverseTurnOrder;
+
 			if (this.players[this.turnOrder[this.turnPlayer]].diceCount == 0) {
 				//eliminated players get removed here
 				this.spectators.push(
 					this.turnOrder.splice(this.turnPlayer, 1)[0]
 				);
-				this.turnPlayer == this.turnPlayer % this.turnOrder.length;
+				if(this.reverseTurnOrder){
+					this.turnPlayer = (this.turnPlayer + this.turnOrder.length - 1) % this.turnOrder.length;
+				}
+				else{
+					this.turnPlayer = this.turnPlayer % this.turnOrder.length;
+				}
 				this.sendSpectators();
 			}
 		}
@@ -264,7 +273,12 @@ class Game {
 			this.bid["bidder"] = this.turnPlayer;
 			this.bid["bidderName"] =
 				this.players[this.turnOrder[this.turnPlayer]].name;
-			this.turnPlayer = (this.turnPlayer + 1) % this.turnOrder.length;
+			if(this.reverseTurnOrder){
+				this.turnPlayer = (this.turnPlayer + this.turnOrder.length - 1) % this.turnOrder.length;
+			}
+			else{
+				this.turnPlayer = (this.turnPlayer + 1) % this.turnOrder.length;
+			}
 		}
 		this.sendGameState(this.bid["challenger"] > -1);
 		return true;
