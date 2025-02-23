@@ -6,17 +6,26 @@ const socket = io();
 const diceFaces = ["🎲", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 
 function Player(props) {
-	let dice = "";
+	let dice = [];
 	for (let i = 0; i < props.dice.length; i++) {
-		dice += diceFaces[props.dice[i]];
-	}
-	let diceText = "center slim";
-	if (props.dice[0] != "0") {
-		diceText = "center slim big";
+		dice.push(
+			<span
+				class={
+					(props.highlight &&
+						(props.highlight == props.dice[i] ||
+							props.dice[i] == 1) &&
+						"blue") +
+					" " +
+					(props.dice[i] > 0 && "big")
+				}
+			>
+				{diceFaces[props.dice[i]]}
+			</span>
+		);
 	}
 	return (
 		<div class="player horizontal">
-			<p class={diceText}>{dice}</p>
+			<p class="center slim">{dice}</p>
 			<h3 class="center">
 				{props.name}
 				{props.isTurnPlayer && <i> to play</i>}
@@ -102,15 +111,14 @@ function App() {
 						diceFaces[data.bid.pips];
 					if (data.bid.challenger > -1) {
 						b += ", " + data.bid.challengerName + " challenges";
-					}
-					else{
-						setGameLog(current => [...current, b]);
+					} else {
+						setGameLog((current) => [...current, b]);
 					}
 					setBid(b);
 					setAmount(data.bid.amount);
 					setPips(data.bid.pips);
 					setBidValues([data.bid.amount, data.bid.pips]);
-				} else{
+				} else {
 					setBid("No bid yet");
 					setGameLog([]);
 					setAmount(1);
@@ -185,6 +193,10 @@ function App() {
 				dice={playerDice[i]}
 				name={players[i]}
 				isTurnPlayer={i == turnPlayer}
+				highlight={
+					(gameState == "readying" || gameState == "over") &&
+					bidValues[1]
+				}
 			/>
 		);
 	}
@@ -201,6 +213,10 @@ function App() {
 					dice={playerDice[youAre]}
 					name={players[youAre]}
 					isTurnPlayer={youAre == turnPlayer}
+					highlight={
+						(gameState == "readying" || gameState == "over") &&
+						bidValues[1]
+					}
 				/>
 			)}
 			{youAre == -1 && <p>You are spectating</p>}
@@ -316,7 +332,12 @@ function App() {
 					</button>
 					<p class="selectorLabel">‎</p>
 					<button
-						class={"selectorLabel " + ((youAre == turnPlayer && bid != "No bid yet") && "redButton")}
+						class={
+							"selectorLabel " +
+							(youAre == turnPlayer &&
+								bid != "No bid yet" &&
+								"redButton")
+						}
 						onClick={challenge}
 						disabled={youAre != turnPlayer || bid == "No bid yet"}
 					>
