@@ -67,8 +67,20 @@ button{
 
 .bottomright{
     position: fixed;
-    top: 65%;
+    top: 20%;
     left: 90%;
+    overflow-y: auto;
+    height: 80%;
+    max-width: 30%;
+}
+
+.bottomleft{
+    position: fixed;
+    top: 20%;
+    left: 0%;
+    overflow-y: auto;
+    height: 80%;
+    max-width: 30%;
 }
 
 .redButton{

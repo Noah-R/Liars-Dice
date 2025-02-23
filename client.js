@@ -66,6 +66,7 @@ function App() {
 	let [name, setName] = useState("");
 	let [canReady, setCanReady] = useState(false);
 	let [spectators, setSpectators] = useState([]);
+	let [gameLog, setGameLog] = useState([]);
 
 	useEffect(() => {
 		function onConnect() {
@@ -102,12 +103,16 @@ function App() {
 					if (data.bid.challenger > -1) {
 						b += ", " + data.bid.challengerName + " challenges";
 					}
+					else{
+						setGameLog(current => [...current, b]);
+					}
 					setBid(b);
 					setAmount(data.bid.amount);
 					setPips(data.bid.pips);
 					setBidValues([data.bid.amount, data.bid.pips]);
-				} else {
+				} else{
 					setBid("No bid yet");
+					setGameLog([]);
 					setAmount(1);
 					setPips(1);
 					setBidValues([0, 0]);
@@ -200,6 +205,17 @@ function App() {
 			)}
 			{youAre == -1 && <p>You are spectating</p>}
 			<div class="center big">{bid}</div>
+		</div>,
+	];
+
+	let logList = [
+		<div class="bottomleft">
+			<h3>Round Log:</h3>
+			<ul>
+				{gameLog.map((name) => (
+					<li>{name}</li>
+				))}
+			</ul>
 		</div>,
 	];
 
@@ -309,6 +325,7 @@ function App() {
 				</div>
 			</div>
 		</div>,
+		logList,
 		spectatorList,
 	];
 
@@ -327,6 +344,7 @@ function App() {
 			)}
 		</div>,
 		<div class="inputBar center">{selfAndBid}</div>,
+		logList,
 		spectatorList,
 	];
 
@@ -344,6 +362,7 @@ function App() {
 			}
 		</div>,
 		<div class="inputBar center">{selfAndBid}</div>,
+		logList,
 		spectatorList,
 	];
 
