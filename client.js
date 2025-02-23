@@ -38,8 +38,10 @@ function Selector(props) {
 	return (
 		<div class="horizontal">
 			<button
-				class="selectorButton"
-				onClick={props.up}
+				class={
+					"selectorButton " + (!props.isTurnPlayer && "grayedOut")
+				}
+				onClick={props.isTurnPlayer && props.up}
 			>
 				🔼
 			</button>
@@ -50,8 +52,10 @@ function Selector(props) {
 				<p class="selectorLabel">{props.value}</p>
 			)}
 			<button
-				class="selectorButton"
-				onClick={props.down}
+				class={
+					"selectorButton " + (!props.isTurnPlayer && "grayedOut")
+				}
+				onClick={props.isTurnPlayer && props.down}
 			>
 				🔽
 			</button>
@@ -111,7 +115,14 @@ function App() {
 						" " +
 						diceFaces[data.bid.pips];
 					if (data.bid.challenger > -1) {
-						b += ", " + data.bid.challengerName + " challenges, " + (data.bid.successful ? data.bid.challengerName : data.bid.bidderName) + " loses a die";
+						b +=
+							", " +
+							data.bid.challengerName +
+							" challenges, " +
+							(data.bid.successful
+								? data.bid.challengerName
+								: data.bid.bidderName) +
+							" loses a die";
 					} else {
 						setGameLog((current) => [...current, b]);
 					}
@@ -131,8 +142,8 @@ function App() {
 			if ("playerDice" in data) {
 				setPlayerDice(data.playerDice);
 				let count = 0;
-				for(let i = 0; i < data.playerDice.length; i++){
-					count +=  data.playerDice[i].length;
+				for (let i = 0; i < data.playerDice.length; i++) {
+					count += data.playerDice[i].length;
 				}
 				setTotalDice(count);
 			}
@@ -300,7 +311,9 @@ function App() {
 
 	let roundScreen = [
 		<div class="center">{opponentOutput}</div>,
-		<h1 class="middle big centerText">{youAre == turnPlayer && "Your turn!"}</h1>,
+		<h1 class="middle big centerText">
+			{youAre == turnPlayer && "Your turn!"}
+		</h1>,
 		<div class="inputBar center">
 			{selfAndBid}
 			<div>
@@ -315,6 +328,7 @@ function App() {
 					}}
 					value={amount}
 					display={[]}
+					isTurnPlayer={youAre == turnPlayer}
 				/>
 				<Selector
 					up={() => {
@@ -325,6 +339,7 @@ function App() {
 					}}
 					value={pips}
 					display={diceFaces}
+					isTurnPlayer={youAre == turnPlayer}
 				/>
 				<div class="horizontal">
 					<button

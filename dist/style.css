@@ -96,3 +96,7 @@ button{
 .centerText{
     text-align: center;
 }
+
+.grayedOut{
+    filter: grayscale(1);
+}
