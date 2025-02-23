@@ -229,6 +229,7 @@ class Game {
 			pips: 0,
 			challenger: -1,
 			challengerName: "",
+			successful: true
 		};
 		this.sendGameState(true);
 		return true;
@@ -277,6 +278,7 @@ class Game {
 		}
 		if (total < this.bid["amount"]) {
 			this.turnPlayer = this.bid["bidder"];
+			this.bid["successful"] = false;
 		}
 		this.players[this.turnOrder[this.turnPlayer]].diceCount -= 1;
 		//if on 0, player will be removed from turn order on next successful call of startIfReady()

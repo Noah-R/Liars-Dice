@@ -110,7 +110,7 @@ function App() {
 						" " +
 						diceFaces[data.bid.pips];
 					if (data.bid.challenger > -1) {
-						b += ", " + data.bid.challengerName + " challenges";
+						b += ", " + data.bid.challengerName + " challenges, " + (data.bid.successful ? data.bid.challengerName : data.bid.bidderName) + " loses a die";
 					} else {
 						setGameLog((current) => [...current, b]);
 					}
