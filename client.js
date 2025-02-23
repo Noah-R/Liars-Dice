@@ -294,6 +294,7 @@ function App() {
 
 	let roundScreen = [
 		<div class="center">{opponentOutput}</div>,
+		<h1 class="middle big centerText">{youAre == turnPlayer && "Your turn!"}</h1>,
 		<div class="inputBar center">
 			{selfAndBid}
 			<div>

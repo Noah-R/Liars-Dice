@@ -25,7 +25,7 @@ button{
 
 .middle{
     position: fixed;
-    top: 35%;
+    top: 25%;
     left: 40%;
     width: 20%;
 }
@@ -91,4 +91,8 @@ button{
 
 .blue{
     color: blue;
+}
+
+.centerText{
+    text-align: center;
 }
