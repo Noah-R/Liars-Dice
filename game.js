@@ -263,8 +263,7 @@ class Game {
 			action[1] < 1 ||
 			action[1] > 6 ||
 			action[0] < this.bid["amount"] ||
-			action[1] < this.bid["pips"] ||
-			(action[0] == this.bid["amount"] && action[1] == this.bid["pips"])
+			(action[0] == this.bid["amount"] && action[1] <= this.bid["pips"])
 		) {
 			return false;
 		} else {

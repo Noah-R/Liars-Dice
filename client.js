@@ -315,7 +315,7 @@ function App() {
 						setPips(Math.min(pips + 1, 6));
 					}}
 					down={() => {
-						setPips(Math.max(pips - 1, Math.max(bidValues[1], 1)));
+						setPips(Math.max(pips - 1, 1));
 					}}
 					value={pips}
 					display={diceFaces}
@@ -326,7 +326,8 @@ function App() {
 						onClick={move}
 						disabled={
 							youAre != turnPlayer ||
-							(amount == bidValues[0] && pips == bidValues[1])
+							amount < bidValues[0] ||
+							(amount == bidValues[0] && pips <= bidValues[1])
 						}
 					>
 						Bid
