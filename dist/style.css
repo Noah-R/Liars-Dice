@@ -70,3 +70,9 @@ button{
     top: 65%;
     left: 90%;
 }
+
+.redButton{
+    color: black;
+    background: red;
+    border: 0px;
+}

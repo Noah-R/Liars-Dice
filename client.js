@@ -300,7 +300,7 @@ function App() {
 					</button>
 					<p class="selectorLabel">‎</p>
 					<button
-						class="selectorLabel"
+						class={"selectorLabel " + ((youAre == turnPlayer && bid != "No bid yet") && "redButton")}
 						onClick={challenge}
 						disabled={youAre != turnPlayer || bid == "No bid yet"}
 					>
