@@ -14,7 +14,7 @@ function Player(props) {
 					(props.highlight &&
 						(props.highlight == props.dice[i] ||
 							props.dice[i] == 1) &&
-						"blue") +
+						props.highlightColor) +
 					" " +
 					(props.dice[i] > 0 && "big")
 				}
@@ -78,6 +78,7 @@ function App() {
 	let [spectators, setSpectators] = useState([]);
 	let [gameLog, setGameLog] = useState([]);
 	let [reverseTurnOrder, setReverseTurnOrder] = useState(false);
+	let [highlightColor, setHighlightColor] = useState("blue");
 
 	useEffect(() => {
 		function onConnect() {
@@ -119,7 +120,8 @@ function App() {
 							(data.bid.successful
 								? data.bid.challengerName
 								: data.bid.bidderName) +
-							" loses a die";
+							" loses a die";						
+						setHighlightColor(data.bid.successful ? "green" : "red");//delete to make highlight always blue
 					} else {
 						setGameLog((current) => [...current, b]);
 					}
@@ -214,6 +216,7 @@ function App() {
 					(gameState == "readying" || gameState == "over") &&
 					bidValues[1]
 				}
+				highlightColor={highlightColor}
 			/>
 		);
 	}
@@ -234,6 +237,7 @@ function App() {
 						(gameState == "readying" || gameState == "over") &&
 						bidValues[1]
 					}
+					highlightColor={highlightColor}
 				/>
 			)}
 			{youAre == -1 && <p>You are spectating</p>}

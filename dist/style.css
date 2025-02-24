@@ -99,6 +99,14 @@ button{
     color: blue;
 }
 
+.green{
+    color: green;
+}
+
+.red{
+    color: red;
+}
+
 .centerText{
     text-align: center;
 }
