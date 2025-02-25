@@ -318,7 +318,7 @@ function App() {
 		<div class="middle">
 			<h1 class="inMiddle big centerText">
 				{youAre == turnPlayer && "Your turn!"}
-				{reverseTurnOrder ? "🔄" : "🔁"}
+				{players.length > 2 && (reverseTurnOrder ? "🔄" : "🔁")}
 			</h1>
 		</div>,
 		<div class="inputBar center">
