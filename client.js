@@ -6,6 +6,7 @@ const socket = io();
 const diceFaces = ["🎲", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 
 function Player(props) {
+	//Room for expansion: options to sort or hide player's dice
 	let dice = [];
 	for (let i = 0; i < props.dice.length; i++) {
 		dice.push(
