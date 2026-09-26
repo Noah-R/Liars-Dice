@@ -73,4 +73,4 @@ io.on("connection", (socket) => {
 	});
 });
 
-module.exports = app;
+httpServer.listen(3000);
