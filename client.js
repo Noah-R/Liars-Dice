@@ -246,6 +246,7 @@ function App() {
 		</div>,
 	];
 
+	//room for expansion: option to minimize game log
 	let logList = [
 		<div class="bottomleft">
 			<h3>Round Log:</h3>
